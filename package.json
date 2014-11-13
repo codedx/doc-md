@@ -1,0 +1,25 @@
+{
+  "name": "Doc-MD",
+  "version": "0.0.1",
+  "description": "A system for building an html help system based on multiple help files written in markdown",
+  "keywords": [
+    "markdown",
+    "help",
+    "html"
+  ],
+  "homepage": "https://github.com/secdec/Doc-MD",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/secdec/Doc-MD"
+  },
+  "dependencies": {
+    "jade": "*",
+    "rimraf": "*",
+    "mkdirp": "*",
+    "ncp": "*",
+    "pagedown": "*",
+    "js-yaml": "*",
+    "cheerio": "*"
+  }
+}
