@@ -1,6 +1,5 @@
 {
   "Web Directory": "./webpage",
-  "Docs Directory": "../markdown-content",
   "Resources Directory Name": "resources",
-  "Output Directory": "../build"
+  "Output Directory": "./build"
 }

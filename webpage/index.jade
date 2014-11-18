@@ -4,8 +4,12 @@ html(lang="en")
       meta(http-equiv="Content-Type", content="text/html", charset="utf-8")
       title
          = title
+      style
+         include lib/lib.css
    body
       div
          != content.main
       div#toc
          != content.toc
+      script
+         include lib/lib.js
