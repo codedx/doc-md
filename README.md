@@ -1,23 +1,51 @@
 Doc-MD
 ======
 
-Doc-MD is a node.js script designed to take multiple help or guide files, written in markdown, and compile them into a single html help document, complete with a Table of Contents that links the sections of the document. While it would certainly be possible to build a single markdown document, as systems grow in complexity (and their documentation grows along with them), it's often easier to maintain up to date documentation if it's broken up by section. However, no one likes clicking through multiple pages of user guides (especially if a page only has a couple paragraphs). Doc-MD solves that problem.
+Doc-MD is a grunt.js plugin designed to take multiple help or guide files, written in markdown, and compile them into a single html help document, complete with a Table of Contents that links the sections of the document. While it would certainly be possible to build a single markdown document, as systems grow in complexity (and their documentation grows along with them), it's often easier to maintain up to date documentation if it's broken up by section. However, no one likes clicking through multiple pages of user guides (especially if a page only has a couple paragraphs). Doc-MD solves that problem.
 
-Setup
------
+Installation
+------------
 
-By default, the script will look for the markdown files in the "markdown-content" directory, which should be a sibling of the directory containing the script. Doc-MD prefers convention over configuration, so the structure of the markdown-content directory should follow the guidelines in the [Markdown Structure](#markdown-structure) section. 
+If you don't already have one, set up a "package.json" file in your project directory. You can use npm do this if necessary by running `npm init` and following the prompts, or by using an editor to create it.
 
-Also by default, it will write its output to the "build" directory, which will be deleted (if necessary) and then created, also as a sibling of the Doc-MD directory.
+This plugin requires Grunt 0.4 or greater. If you don't already have it, from in your project directory run
+`npm install grunt --save-dev`
+This will install grunt and update the `devDependencies` property in your package.json file.
+Then run `npm install ${path-to-docmd} --save-dev` where `${path-to-docmd}` is the path to a location where you've cloned doc-md. (At some point once it's more stable, we'll publish doc-md to the npm registry, and you'll be able to install it more easily.)
 
-Both of these defaults can be overridden by modifying the "config.json" file.
+Configuration
+-------------
 
-Before running Doc-MD the first time, you need to run `npm install` from the Doc-MD directory, to grab the necessary node dependencies.
+Add to your `Gruntfile.js` (first creating the file in your project directory if necessary):
+`grunt.loadTasks('${path to docmd}/tasks');`
+again where `${path-to-docmd}` is the path to the location where you've cloned doc-md.
+
+You also need to configure the `docs` and `output` options to point to the location in your filesystem where you've stored your markdown documents (see the [Markdown Structure](#markdown-structure) section for details) and to where you want the output from doc-md to go, respectively. For each html guide you want, you should specify a doc-md task, with the single property `directory`, specifying the path to the guide in question, relative to the markdown directory specified by the `docs` option.
+
+### Config Example
+`
+grunt.initConfig({
+  doc_md: {
+    options: {
+      docs: "../../documents",
+      output: "../docs-build"
+    },
+    user_guide: {
+      directory: "user_guide"
+    }
+  }
+});
+`
+
+Before running grunt the first time, you need to run `npm install` from the doc-md directory, to grab the necessary node dependencies. 
+
+Then you can simply define a grunt task that calls the doc-md plugin. For example:
+`grunt.registerTask('default', ['doc_md']);`
 
 Run
 ---
 
-To run Doc-MD, run `node build` from the command line. If you've set up and configured everything correctly, your output should appear in the directory specified in "config.json".
+To run doc-md, run `grunt ${task}`, where ${task} is the name of the task specified above, from the command line. If you've set up and configured everything correctly, your output should appear in the directory specified in the `output` option.
 
 Markdown Structure
 ------------------
