@@ -9,21 +9,29 @@ Installation
 If you don't already have one, set up a "package.json" file in your project directory. You can use npm do this if necessary by running `npm init` and following the prompts, or by using an editor to create it.
 
 This plugin requires Grunt 0.4 or greater. If you don't already have it, from in your project directory run
+
 `npm install grunt --save-dev`
+
 This will install grunt and update the `devDependencies` property in your package.json file.
-Then run `npm install ${path-to-docmd} --save-dev` where `${path-to-docmd}` is the path to a location where you've cloned doc-md. (At some point once it's more stable, we'll publish doc-md to the npm registry, and you'll be able to install it more easily.)
+Then run 
+
+`npm install ${path-to-docmd} --save-dev` 
+
+where `${path-to-docmd}` is the path to a location where you've cloned doc-md. (At some point once it's more stable, we'll publish doc-md to the npm registry, and you'll be able to install it more easily.)
 
 Configuration
 -------------
 
 Add to your `Gruntfile.js` (first creating the file in your project directory if necessary):
+
 `grunt.loadTasks('${path to docmd}/tasks');`
+
 again where `${path-to-docmd}` is the path to the location where you've cloned doc-md.
 
 You also need to configure the `docs` and `output` options to point to the location in your filesystem where you've stored your markdown documents (see the [Markdown Structure](#markdown-structure) section for details) and to where you want the output from doc-md to go, respectively. For each html guide you want, you should specify a doc-md task, with the single property `directory`, specifying the path to the guide in question, relative to the markdown directory specified by the `docs` option.
 
 ### Config Example
-`
+```
 grunt.initConfig({
   doc_md: {
     options: {
@@ -35,11 +43,12 @@ grunt.initConfig({
     }
   }
 });
-`
+```
 
 Before running grunt the first time, you need to run `npm install` from the doc-md directory, to grab the necessary node dependencies. 
 
 Then you can simply define a grunt task that calls the doc-md plugin. For example:
+
 `grunt.registerTask('default', ['doc_md']);`
 
 Run
