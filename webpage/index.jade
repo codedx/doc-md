@@ -5,11 +5,19 @@ html(lang="en")
       title
          = title
       style
-         include lib/lib.css
+         include lib/lib.min.css
+         include css/main.css
+         include lib/user.css
    body
-      div
-         != content.main
       div#toc
-         != content.toc
+         h1 Table of Contents
+         ul.docmd-toc-list
+            != content.toc
+      div#main
+         != content.main
+
+
+
       script
-         include lib/lib.js
+         include lib/lib.min.js
+         include js/main.js

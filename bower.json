@@ -1,0 +1,16 @@
+{
+  "name": "doc-md",
+  "version": "0.1.0",
+  "dependencies": {
+    "bootstrap": "~3.3.1"
+  },
+  "exportsOverride": {
+    "bootstrap": {
+      "js": "dist/js/bootstrap.min.js",
+      "css": "dist/css/bootstrap.min.css"
+    },
+    "jquery": {
+      "js": "dist/jquery.min.js"
+    }
+  }
+}
