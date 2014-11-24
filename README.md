@@ -85,3 +85,23 @@ Second, each directory has its own properties.yml file. This file currently defi
 Third, for sections (such as section4 in the example above) where there's a need for both subsections as well as content that should appear before any subsections, but not as a part of any of them, you can define a base.md file. In directories with such a file, the content of the base.md file will appear before any of the subsections at a higher header level.
 
 Users should also note that the numbers in the example above are for purposes of illustration only--they're not necessary.
+
+###Sample properties.yml
+```
+name: "Sample Guide"
+description: "Description of sample guide"
+toc:
+  -
+    file: section1.md
+    name: First Section
+  -
+    file: section2.md
+    name: Section Two
+  -
+    file: section3
+  -
+    file: section4
+  -
+    file: section5.md
+    name: The Last Section
+```
