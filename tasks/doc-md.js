@@ -132,8 +132,9 @@ module.exports = function(grunt) {
     grunt.registerMultiTask('doc_md', function() {
         var options = this.options({
             webDir: path.join(__dirname, "../webpage"),
-            bowerDir: path.join(__dirname, "../bower_lib"),
-            resourcesName: "resources"
+            resourcesName: "resources",
+            jsDir: "./js",
+            cssDir: "./css"
         });
         var dataDir = this.data.directory;
         var base = grunt.option('base') || process.cwd();
@@ -176,7 +177,7 @@ module.exports = function(grunt) {
         process.chdir(path.join(__dirname, '../'));
         grunt.config('bower', {
             'options': {
-                targetDir: 'bower_lib'
+                copy: false
             },
             'install': {}
         });
@@ -184,34 +185,25 @@ module.exports = function(grunt) {
         grunt.task.run('docmd_chdir');
 
         grunt.config('concat', {
-
-            'docmd_js': {
+            'docmd_user_js': {
                 options: {
                     separator: ';\n'
                 },
                 src: [
-                    path.join(options.bowerDir, 'js', 'jquery', 'jquery.min.js'),
-                    path.join(options.bowerDir, 'js', 'bootstrap', 'bootstrap.min.js')
+                    path.join(options.jsDir, '*.js')
                 ],
-                dest: path.join(options.webDir, 'lib', 'lib.js')
+                dest: path.join(options.webDir, 'lib', 'user.js')
             },
-            'docmd_css': {
-                src: [
-                    path.join(options.bowerDir, 'css', '*', '*.css')
-                ],
-                dest: path.join(options.webDir, 'lib', 'lib.css')
-            },
-            'docmd_user': {
+            'docmd_user_css': {
                 src: [
                     path.join(options.cssDir, '*.css')
                 ],
                 dest: path.join(options.webDir, 'lib', 'user.css')
             }
         });
-        grunt.task.run('concat:docmd_js', 'concat:docmd_css', 'concat:docmd_user');
+        grunt.task.run('concat:docmd_user_js', 'concat:docmd_user_css');
 
 
-        //TODO convert the markdown and apply templates
         grunt.registerTask('docmd_markdown', function() {
             processMarkdown(options, dataDir);
         });
@@ -227,10 +219,30 @@ module.exports = function(grunt) {
                         dest: path.join(options.output, options.resourcesName)
                     }
                 ]
+            },
+            docmd_bower: {
+                files: [
+                    {
+                        expand: true,
+                        cwd: path.join(__dirname, "../bower_components"),
+                        src: ["*/dist/**/*"],
+                        dest: path.join(options.output, 'lib')
+                    }
+                ]
+            },
+            docmd_user_lib: {
+                files: [
+                    {
+                        expand: true,
+                        cwd: path.join(options.webDir, 'lib'),
+                        src: ["*"],
+                        dest: path.join(options.output, 'lib')
+                    }
+                ]
             }
 
         });
-        grunt.task.run('copy:docmd_resources');
+        grunt.task.run('copy:docmd_resources', 'copy:docmd_bower', 'copy:docmd_user_lib');
     });
 
 

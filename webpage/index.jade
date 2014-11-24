@@ -4,20 +4,24 @@ html(lang="en")
       meta(http-equiv="Content-Type", content="text/html", charset="utf-8")
       title
          = title
+      link(rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css")
       style
-         include lib/lib.min.css
          include css/main.css
-         include lib/user.css
+      style(rel="stylesheet" href="lib/user.css")
+
    body
-      div#toc
-         h1 Table of Contents
-         ul.docmd-toc-list
-            != content.toc
-      div#main
-         != content.main
+      div.container-fluid
+         div.row
+            div#toc.col-md-3
+               h1 Table of Contents
+               ul.docmd-toc-list
+                  != content.toc
+            div#main.col-md-9
+               != content.main
 
 
-
+      script(src="lib/jquery/dist/jquery.min.js")
+      script(src="lib/bootstrap/dist/js/bootstrap.min.js")
       script
-         include lib/lib.min.js
          include js/main.js
+      script(src="lib/user.js")
