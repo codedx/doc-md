@@ -165,15 +165,19 @@ module.exports = function(grunt) {
                 force: true
             },
             docmd_lib: [
-                path.join(options.webDir, "js", "lib")
+                path.join(options.webDir, "lib")
             ],
             docmd_output: [
                 options.output
             ]
         });
         grunt.task.run('clean:docmd_lib', 'clean:docmd_output');
-        grunt.file.mkdir(options.output);
-        grunt.file.mkdir(path.join(options.webDir, 'lib'));
+        grunt.registerTask('docmd_setup', function() {
+            grunt.file.mkdir(options.output);
+            grunt.file.mkdir(path.join(options.webDir, 'lib'));
+        });
+        grunt.task.run('docmd_setup');
+
         process.chdir(path.join(__dirname, '../'));
         grunt.config('bower', {
             'options': {
