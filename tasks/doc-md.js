@@ -80,9 +80,10 @@ module.exports = function(grunt) {
                 grunt.fail.warn("Could not properly parse " + propsFile + "as a yaml file");
             }
         });
+        var normalizeHeaders = properties['normalizeHeaders'] === undefined ? true : properties['normalizeHeaders'];
         var htmlContent = buildAndLinkHtml({
             'docDir': docDir,
-            'normalizeHeaders': properties['normalizeHeaders']
+            'normalizeHeaders': normalizeHeaders
         }, properties, 1);
         var compiledTemplateName = markdownDir + ".html";
         var render = jade.compileFile(path.join(options.webDir, "index.jade"));
