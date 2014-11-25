@@ -2,75 +2,12 @@
 
 module.exports = function(grunt) {
 
-
     var jade = require('jade'),
         path = require('path'),
         fs = require('fs'),
         yaml = require('js-yaml'),
-        pagedown = require('pagedown'),
-        cheerio = require('cheerio');
+        buildAndLinkHtml = require('./lib/htmlUtils').buildAndLinkHtml;
 
-    var converter = new pagedown.Converter();
-
-    var idRegex = /[^\w]/g;
-
-    var allHeaders = 'h1, h2, h3, h4, h5, h6';
-
-    var parseDocumentStructure = function(/*String*/ basePath, /*String*/ fileName, /*numeric*/ depth) {
-        var fullPath = path.join(basePath, fileName);
-
-        if (fs.statSync(fullPath).isDirectory()) {
-            var subContent = {};
-            fs.readdirSync(fullPath).forEach(function(subFile) {
-                subContent[subFile] = parseDocumentStructure(fullPath, subFile, depth + 1);
-            });
-            if (!subContent["properties.yml"]) {
-                grunt.fail.warn(fullPath + "did not define a properties file");
-            }
-            return subContent;
-        } else {
-            if (fileName === "properties.yml") {
-                var properties = yaml.safeLoad(fs.readFileSync(fullPath), {
-                    onWarning: function() {
-                        grunt.fail.warn("Could not propertly parse " + fullPath + "as a yaml file");
-                    }
-                });
-                properties['depth'] = depth;
-                if (!properties || !properties['toc']) {
-                    console.warn(fullPath + ' does not define a toc. None of its sections will be included.');
-                } else {
-                    properties['toc'].forEach(function(section) {
-                        if (!section.file) {
-                            grunt.fail.warn(fullPath + " has an invalid toc value");
-                        }
-                    })
-                }
-                return properties;
-            } else {
-                return '' + fullPath;
-            }
-        }
-    };
-
-    var buildHeader = function(name, depth) {
-        var header = '<h' + (depth) + '>' + name + '</h' + depth + '>';
-        return header;
-    };
-
-    var appendTocElement = function(toc, link) {
-        var element = cheerio.load('<li></li>');
-        element('li')
-            .addClass('docmd-toc-item')
-            .append(link);
-        toc.root().append(element.html());
-    };
-
-    var buildSimpleTocLink = function(name, anchorId) {
-        return cheerio.load('<a>')('a')
-            .attr('href', '#' + anchorId)
-            .addClass("docmd-toc-link")
-            .text(name);
-    };
 
     var processMarkdown = function(options, markdownDir) {
         var docDir = path.join(options.docs, markdownDir);
@@ -94,158 +31,7 @@ module.exports = function(grunt) {
         grunt.file.write(path.join(options.output, compiledTemplateName), output);
     };
 
-    //TODO consider creating a constants object to line up with the properties in the yml file
-
-    var buildAndLinkHtml = function(options, properties, depth) {
-        if (depth > 4) {
-            //TODO determine if this is the correct threshold
-            depth = 4;
-        }
-        var tocSections = cheerio.load('');
-        var name,
-            header,
-            $;
-        if (properties["name"]) {
-            name = properties["name"];
-            $ = cheerio.load(buildHeader(name, depth));
-            header = $(allHeaders).first();
-        } else if (properties["file"]) {
-            var sectionFile = path.join(options['docDir'], properties["file"]);
-            var markdown = fs.readFileSync(sectionFile, {"encoding": "utf-8"});
-            var markdownHtml = converter.makeHtml(markdown);
-            $ = cheerio.load('');
-            $.root().append(markdownHtml);
-            if (options["normalizeHeaders"]) {
-                adjustHeaders($, depth);
-            }
-            header = $(allHeaders).first();
-            name = header.text();
-        } else  {
-            grunt.fail.warn("A toc list contains an element that is neither a name nor a file");
-        }
-        var anchorId = properties["anchor"];
-        if (!anchorId) {
-            anchorId = name.replace(idRegex, '');
-        }
-        header.attr('id', anchorId);
-        appendTocElement(tocSections, buildSimpleTocLink(name, anchorId));
-
-        if (properties["toc"]) {
-            properties["toc"].forEach(function(section) {
-                var sectionContent = buildAndLinkHtml(options, section, depth + 1);
-
-                appendTocElement(tocSections, sectionContent["toc"]);
-                $.root().append(sectionContent['main']);
-            });
-        }
-
-        var toc = cheerio.load('');
-        var tocContents = cheerio.load('<ul>');
-        tocContents('ul').addClass('docmd-toc-list')
-            .append(tocSections.html());
-        toc.root().append(tocContents.html());
-
-        return {
-            "main": $.root().html(),
-            "toc": toc.html()
-        };
-    };
-
-    var adjustHeaders = function($, depth) {
-        $(allHeaders).each(function(index, element) {
-            var level = element.tagName.match(/\d/);
-            var newLevel = parseInt(level) + depth - 1;
-            if (newLevel > 6) {
-                newLevel = 6;
-            }
-            element.tagName = 'h' + newLevel;
-        });
-    };
-
-    grunt.registerMultiTask('doc_md', function() {
-        var options = this.options({
-            webDir: path.join(__dirname, "../webpage"),
-            resourcesName: "resources",
-            jsDir: "./js",
-            cssDir: "./css"
-        });
-        var dataDir = this.data.directory;
-        var base = grunt.option('base') || process.cwd();
-
-        grunt.registerTask('docmd_chdir', function() {
-            process.chdir(base);
-        });
-
-        if (!options.docs) {
-            grunt.warn("docs directory not specified");
-        }
-        if (!options.output) {
-            grunt.warn("output directory not specified");
-        }
-        if (!dataDir) {
-            grunt.warn("markdown directory not specified");
-        }
-
-        grunt.loadNpmTasks('grunt-contrib-clean');
-        grunt.loadNpmTasks('grunt-bower-concat');
-        grunt.loadNpmTasks('grunt-contrib-concat');
-        grunt.loadNpmTasks('grunt-contrib-copy');
-        grunt.loadNpmTasks('grunt-bower-task');
-
-        //setup directories and libraries
-        grunt.config('clean', {
-            options: {
-                force: true
-            },
-            docmd_lib: [
-                path.join(options.webDir, "lib")
-            ],
-            docmd_output: [
-                options.output
-            ]
-        });
-        grunt.task.run('clean:docmd_lib', 'clean:docmd_output');
-        grunt.registerTask('docmd_setup', function() {
-            grunt.file.mkdir(options.output);
-            grunt.file.mkdir(path.join(options.webDir, 'lib'));
-        });
-        grunt.task.run('docmd_setup');
-
-        process.chdir(path.join(__dirname, '../'));
-        grunt.config('bower', {
-            'options': {
-                copy: false
-            },
-            'install': {}
-        });
-        grunt.task.run('bower');
-        grunt.task.run('docmd_chdir');
-
-        grunt.config('concat', {
-            'docmd_user_js': {
-                options: {
-                    separator: ';\n'
-                },
-                src: [
-                    path.join(options.jsDir, '*.js')
-                ],
-                dest: path.join(options.webDir, 'lib', 'user.js')
-            },
-            'docmd_user_css': {
-                src: [
-                    path.join(options.cssDir, '*.css')
-                ],
-                dest: path.join(options.webDir, 'lib', 'user.css')
-            }
-        });
-        grunt.task.run('concat:docmd_user_js', 'concat:docmd_user_css');
-
-
-        grunt.registerTask('docmd_markdown', function() {
-            processMarkdown(options, dataDir);
-        });
-        grunt.task.run('docmd_markdown');
-
+    var copyResources = function (options) {
         grunt.config('copy', {
             docmd_resources: {
                 files: [
@@ -280,27 +66,101 @@ module.exports = function(grunt) {
 
         });
         grunt.task.run('copy:docmd_resources', 'copy:docmd_bower', 'copy:docmd_user_lib');
-    });
-
-
-    /**
-     * Prints out the keys of an object. This is only for testing, and can
-     * probably be removed
-     * @param object the object whose keys should be printed
-     */
-    var check = function(object) {
-        if (! object) {
-            grunt.log.writeln('object is falsey');
-        }
-        if (typeof object === 'string') {
-            grunt.log.writeln(object);
-        } else if (typeof object === 'object') {
-            grunt.log.writeln("object's properties:");
-            Object.keys(object).forEach(function(key) {grunt.log.writeln(key + ', ');});
-        } else {
-            grunt.log.writeln('type ' + typeof object);
-        }
     };
+    var setupDirectories = function (options) {
+        grunt.config('clean', {
+            options: {
+                force: true
+            },
+            docmd_lib: [
+                path.join(options.webDir, "lib")
+            ],
+            docmd_output: [
+                options.output
+            ]
+        });
+        grunt.task.run('clean:docmd_lib', 'clean:docmd_output');
+        grunt.registerTask('docmd_setup', function () {
+            grunt.file.mkdir(options.output);
+            grunt.file.mkdir(path.join(options.webDir, 'lib'));
+        });
+        grunt.task.run('docmd_setup');
+    };
+    var handleWebDependencies = function (options) {
+        process.chdir(path.join(__dirname, '../'));
+        grunt.config('bower', {
+            'options': {
+                copy: false
+            },
+            'install': {}
+        });
+        grunt.task.run('bower');
+        grunt.task.run('docmd_chdir');
+
+        grunt.config('concat', {
+            'docmd_user_js': {
+                options: {
+                    separator: ';\n'
+                },
+                src: [
+                    path.join(options.jsDir, '*.js')
+                ],
+                dest: path.join(options.webDir, 'lib', 'user.js')
+            },
+            'docmd_user_css': {
+                src: [
+                    path.join(options.cssDir, '*.css')
+                ],
+                dest: path.join(options.webDir, 'lib', 'user.css')
+            }
+        });
+        grunt.task.run('concat:docmd_user_js', 'concat:docmd_user_css');
+    };
+
+    grunt.registerTask('doc_md', function() {
+        var options = this.options({
+            webDir: path.join(__dirname, "../webpage"),
+            resourcesName: "resources",
+            jsDir: "./js",
+            cssDir: "./css"
+        });
+        var dataDirs = options.directories;
+        var base = grunt.option('base') || process.cwd();
+
+        grunt.registerTask('docmd_chdir', function() {
+            process.chdir(base);
+        });
+
+        if (!options.docs) {
+            grunt.warn("docs directory not specified");
+        }
+        if (!options.output) {
+            grunt.warn("output directory not specified");
+        }
+        if (!dataDirs || dataDirs.length == 0) {
+            grunt.warn("markdown directory not specified");
+        }
+
+        grunt.loadNpmTasks('grunt-contrib-clean');
+        grunt.loadNpmTasks('grunt-bower-concat');
+        grunt.loadNpmTasks('grunt-contrib-concat');
+        grunt.loadNpmTasks('grunt-contrib-copy');
+        grunt.loadNpmTasks('grunt-bower-task');
+
+
+        setupDirectories(options);
+
+        handleWebDependencies(options);
+
+        grunt.registerTask('docmd_markdown', function() {
+            dataDirs.forEach(function(directory) {
+                processMarkdown(options, directory);
+            });
+        });
+        grunt.task.run('docmd_markdown');
+
+        copyResources(options);
+    });
 };
 
 
