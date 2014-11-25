@@ -67,9 +67,9 @@ var buildAndLinkHtml = function(options, properties, depth) {
     } else  {
         grunt.fail.warn("A toc list contains an element that is neither a name nor a file");
     }
-    var anchorId = properties["anchor"];
+    var anchorId = properties["referenceId"];
     if (!anchorId) {
-        anchorId = name.replace(idRegex, '');
+        anchorId = buildId(name);
     }
     header.attr('id', anchorId);
     appendTocElement(tocSections, buildSimpleTocLink(name, anchorId));
@@ -95,6 +95,25 @@ var buildAndLinkHtml = function(options, properties, depth) {
     };
 };
 
+var buildGuideLinks = function(guides) {
+    var $ = cheerio.load('<div id="all-guides-list" class="list-group">');
+    guides.forEach(function(guide) {
+        var element = cheerio.load('<a>');
+        element('a')
+            .addClass("all-guides-list-item list-group-item")
+            .attr('href', guide.link)
+            .text(guide.text);
+        $.root().append(element.root().html())
+    });
+    return $.root().html();
+};
+
+var buildId = function(name) {
+    return name.replace(idRegex, '');
+};
+
 module.exports = {
-    buildAndLinkHtml: buildAndLinkHtml
+    buildAndLinkHtml: buildAndLinkHtml,
+    buildGuideLinks: buildGuideLinks,
+    buildId: buildId
 };

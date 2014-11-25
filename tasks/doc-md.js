@@ -6,29 +6,26 @@ module.exports = function(grunt) {
         path = require('path'),
         fs = require('fs'),
         yaml = require('js-yaml'),
-        buildAndLinkHtml = require('./lib/htmlUtils').buildAndLinkHtml;
+        htmlUtils = require('./lib/htmlUtils');
+
+    var buildAndLinkHtml = htmlUtils.buildAndLinkHtml;
 
 
-    var processMarkdown = function(options, markdownDir) {
-        var docDir = path.join(options.docs, markdownDir);
-        var propsFile = path.join(docDir, "properties.yml");
-        var properties = yaml.safeLoad(fs.readFileSync(propsFile), {
-            onWarning: function() {
-                grunt.fail.warn("Could not properly parse " + propsFile + "as a yaml file");
-            }
-        });
+    var processMarkdown = function(parameters) {
+        var docDir = parameters.docDir;
+        var properties = parameters.properties;
         var normalizeHeaders = properties['normalizeHeaders'] === undefined ? true : properties['normalizeHeaders'];
         var htmlContent = buildAndLinkHtml({
             'docDir': docDir,
             'normalizeHeaders': normalizeHeaders
         }, properties, 1);
-        var compiledTemplateName = markdownDir + ".html";
-        var render = jade.compileFile(path.join(options.webDir, "index.jade"));
+        var render = jade.compileFile(path.join(parameters.webDir, "index.jade"));
+        htmlContent.guideLinks = parameters.guideLinks;
         var output = render({
             "content": htmlContent,
             "title": properties["name"]
         });
-        grunt.file.write(path.join(options.output, compiledTemplateName), output);
+        grunt.file.write(path.join(parameters.output, parameters.guideFile), output);
     };
 
     var copyResources = function (options) {
@@ -153,8 +150,33 @@ module.exports = function(grunt) {
         handleWebDependencies(options);
 
         grunt.registerTask('docmd_markdown', function() {
+            var guides = [];
             dataDirs.forEach(function(directory) {
-                processMarkdown(options, directory);
+                var guide = {};
+                var propsFile = path.join(options.docs, directory, "properties.yml");
+                var properties = yaml.safeLoad(fs.readFileSync(propsFile), {
+                    onWarning: function() {
+                        grunt.fail.warn("Could not properly parse " + propsFile + "as a yaml file");
+                    }
+                });
+                guide.propertiesFile = properties;
+                guide.link = properties['referenceId'] || htmlUtils.buildId(properties['name']) + '.html';
+                guide.text = properties['name'];
+                guide.directory = directory;
+                guides.push(guide);
+            });
+
+            var guideLinksHtml = htmlUtils.buildGuideLinks(guides);
+
+            guides.forEach(function(guide) {
+                processMarkdown({
+                    webDir: options.webDir,
+                    properties: guide.propertiesFile,
+                    guideFile: guide.link,
+                    guideLinks: guideLinksHtml,
+                    output: options.output,
+                    docDir: path.join(options.docs, guide.directory)
+                });
             });
         });
         grunt.task.run('docmd_markdown');
