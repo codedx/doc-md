@@ -80,7 +80,10 @@ module.exports = function(grunt) {
                 grunt.fail.warn("Could not properly parse " + propsFile + "as a yaml file");
             }
         });
-        var htmlContent = buildAndLinkHtml(docDir, properties, 1);
+        var htmlContent = buildAndLinkHtml({
+            'docDir': docDir,
+            'normalizeHeaders': properties['normalizeHeaders']
+        }, properties, 1);
         var compiledTemplateName = markdownDir + ".html";
         var render = jade.compileFile(path.join(options.webDir, "index.jade"));
         var output = render({
@@ -92,7 +95,7 @@ module.exports = function(grunt) {
 
     //TODO consider creating a constants object to line up with the properties in the yml file
 
-    var buildAndLinkHtml = function(docDir, properties, depth) {
+    var buildAndLinkHtml = function(options, properties, depth) {
         if (depth > 4) {
             //TODO determine if this is the correct threshold
             depth = 4;
@@ -106,11 +109,14 @@ module.exports = function(grunt) {
             $ = cheerio.load(buildHeader(name, depth));
             header = $(allHeaders).first();
         } else if (properties["file"]) {
-            var sectionFile = path.join(docDir, properties["file"]);
+            var sectionFile = path.join(options['docDir'], properties["file"]);
             var markdown = fs.readFileSync(sectionFile, {"encoding": "utf-8"});
             var markdownHtml = converter.makeHtml(markdown);
             $ = cheerio.load('');
             $.root().append(markdownHtml);
+            if (options["normalizeHeaders"]) {
+                adjustHeaders($, depth);
+            }
             header = $(allHeaders).first();
             name = header.text();
         } else  {
@@ -123,10 +129,9 @@ module.exports = function(grunt) {
         header.attr('id', anchorId);
         appendTocElement(tocSections, buildSimpleTocLink(name, anchorId));
 
-
         if (properties["toc"]) {
             properties["toc"].forEach(function(section) {
-                var sectionContent = buildAndLinkHtml(docDir, section, depth + 1);
+                var sectionContent = buildAndLinkHtml(options, section, depth + 1);
 
                 appendTocElement(tocSections, sectionContent["toc"]);
                 $.root().append(sectionContent['main']);
@@ -134,18 +139,26 @@ module.exports = function(grunt) {
         }
 
         var toc = cheerio.load('');
-        //var toc = cheerio.load('<li></li>');
-        //appendTocElement(toc, buildSimpleTocLink(name, anchorId));
         var tocContents = cheerio.load('<ul>');
         tocContents('ul').addClass('docmd-toc-list')
             .append(tocSections.html());
         toc.root().append(tocContents.html());
 
-
         return {
             "main": $.root().html(),
             "toc": toc.html()
         };
+    };
+
+    var adjustHeaders = function($, depth) {
+        $(allHeaders).each(function(index, element) {
+            var level = element.tagName.match(/\d/);
+            var newLevel = parseInt(level) + depth;
+            if (newLevel > 6) {
+                newLevel = 6;
+            }
+            element.tagName = 'h' + newLevel;
+        });
     };
 
     grunt.registerMultiTask('doc_md', function() {
