@@ -154,7 +154,7 @@ module.exports = function(grunt) {
     var adjustHeaders = function($, depth) {
         $(allHeaders).each(function(index, element) {
             var level = element.tagName.match(/\d/);
-            var newLevel = parseInt(level) + depth;
+            var newLevel = parseInt(level) + depth - 1;
             if (newLevel > 6) {
                 newLevel = 6;
             }
