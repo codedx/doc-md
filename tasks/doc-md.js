@@ -1,6 +1,5 @@
 
 
-
 module.exports = function(grunt) {
 
 
@@ -14,6 +13,8 @@ module.exports = function(grunt) {
     var converter = new pagedown.Converter();
 
     var idRegex = /[^\w]/g;
+
+    var allHeaders = 'h1, h2, h3, h4, h5, h6';
 
     var parseDocumentStructure = function(/*String*/ basePath, /*String*/ fileName, /*numeric*/ depth) {
         var fullPath = path.join(basePath, fileName);
@@ -51,70 +52,8 @@ module.exports = function(grunt) {
         }
     };
 
-    var buildAndLinkHtml = function(content) {
-        var order = content["properties.yml"]["toc"] || [];
-        var depth = content["properties.yml"]["depth"] + 1;
-        if (depth > 4) {
-            depth = 4;
-        }
-
-        var name = content["properties.yml"]["name"];
-        var anchorId = name.replace(idRegex, '');
-        var html = buildHeader(name, anchorId, depth);
-
-        var tocSections = cheerio.load('');
-
-        order.forEach(function(section) {
-            var sectionHtml;
-            var markdown;
-            var sectionFile = content[section.file];
-
-            if (typeof  sectionFile === "string") {
-                var name = section.name;
-                if (!name) {
-                    grunt.fail.warn('No name was provided for ' + sectionFile);
-                }
-                var anchorId = name.replace(idRegex, '');
-                markdown = fs.readFileSync(sectionFile, {"encoding": "utf-8"});
-                var markdownHtml = converter.makeHtml(markdown);
-                if (cheerio.load(markdownHtml)('h1, h2, h3, h4, h5').length > 0) {
-                    console.warn(sectionFile + " makes use of markdown headers. " +
-                    "These may visually clash with headers inserted by doc-md");
-                }
-                sectionHtml = buildHeader(name, anchorId, depth + 1) + markdownHtml;
-                appendTocElement(tocSections, buildSimpleTocLink(name, anchorId));
-            } else {
-
-                if (sectionFile["base.md"]) {
-                    markdown = fs.readFileSync(sectionFile["base.md"], {"encoding": "utf-8"});
-                    sectionHtml = converter.makeHtml(markdown);
-                }
-
-                //this feels clunky. there's probably a better way to handle this
-                var subContent = buildAndLinkHtml(sectionFile);
-                sectionHtml = sectionHtml + subContent["main"];
-                appendTocElement(tocSections, subContent["toc"]);
-            }
-
-            html = html + sectionHtml;
-        });
-
-        var toc = cheerio.load('<li></li>');
-        appendTocElement(toc, buildSimpleTocLink(name, anchorId));
-        var tocContents = cheerio.load('<ul>');
-        tocContents('ul').addClass('docmd-toc-list')
-            .append(tocSections.html());
-        toc.root().append(tocContents.html());
-
-
-        return {
-            "main": html,
-            "toc": toc.html()
-        };
-    };
-
-    var buildHeader = function(name, id, depth) {
-        var header = '<h' + (depth) + ' id="' + id + '">' + name + '</h' + depth + '>';
+    var buildHeader = function(name, depth) {
+        var header = '<h' + (depth) + '>' + name + '</h' + depth + '>';
         return header;
     };
 
@@ -133,16 +72,15 @@ module.exports = function(grunt) {
             .text(name);
     };
 
-
     var processMarkdown = function(options, markdownDir) {
         var docDir = path.join(options.docs, markdownDir);
-        var files = fs.readdirSync(docDir);
-        var content = {};
-        files.forEach(function (file) {
-            content[file] = parseDocumentStructure(docDir, file, 0);
+        var propsFile = path.join(docDir, "properties.yml");
+        var properties = yaml.safeLoad(fs.readFileSync(propsFile), {
+            onWarning: function() {
+                grunt.fail.warn("Could not properly parse " + propsFile + "as a yaml file");
+            }
         });
-        var properties = content["properties.yml"];
-        var htmlContent = buildAndLinkHtml(content);
+        var htmlContent = buildAndLinkHtml(docDir, properties, 1);
         var compiledTemplateName = markdownDir + ".html";
         var render = jade.compileFile(path.join(options.webDir, "index.jade"));
         var output = render({
@@ -150,6 +88,64 @@ module.exports = function(grunt) {
             "title": properties["name"]
         });
         grunt.file.write(path.join(options.output, compiledTemplateName), output);
+    };
+
+    //TODO consider creating a constants object to line up with the properties in the yml file
+
+    var buildAndLinkHtml = function(docDir, properties, depth) {
+        if (depth > 4) {
+            //TODO determine if this is the correct threshold
+            depth = 4;
+        }
+        var tocSections = cheerio.load('');
+        var name,
+            header,
+            $;
+        if (properties["name"]) {
+            name = properties["name"];
+            $ = cheerio.load(buildHeader(name, depth));
+            header = $(allHeaders).first();
+        } else if (properties["file"]) {
+            var sectionFile = path.join(docDir, properties["file"]);
+            var markdown = fs.readFileSync(sectionFile, {"encoding": "utf-8"});
+            var markdownHtml = converter.makeHtml(markdown);
+            $ = cheerio.load('');
+            $.root().append(markdownHtml);
+            header = $(allHeaders).first();
+            name = header.text();
+        } else  {
+            grunt.fail.warn("A toc list contains an element that is neither a name nor a file");
+        }
+        var anchorId = properties["anchor"];
+        if (!anchorId) {
+            anchorId = name.replace(idRegex, '');
+        }
+        header.attr('id', anchorId);
+        appendTocElement(tocSections, buildSimpleTocLink(name, anchorId));
+
+
+        if (properties["toc"]) {
+            properties["toc"].forEach(function(section) {
+                var sectionContent = buildAndLinkHtml(docDir, section, depth + 1);
+
+                appendTocElement(tocSections, sectionContent["toc"]);
+                $.root().append(sectionContent['main']);
+            });
+        }
+
+        var toc = cheerio.load('');
+        //var toc = cheerio.load('<li></li>');
+        //appendTocElement(toc, buildSimpleTocLink(name, anchorId));
+        var tocContents = cheerio.load('<ul>');
+        tocContents('ul').addClass('docmd-toc-list')
+            .append(tocSections.html());
+        toc.root().append(tocContents.html());
+
+
+        return {
+            "main": $.root().html(),
+            "toc": toc.html()
+        };
     };
 
     grunt.registerMultiTask('doc_md', function() {
