@@ -21,7 +21,9 @@ module.exports = function(grunt) {
         }, properties, 1);
         var render = jade.compileFile(path.join(parameters.webDir, "index.jade"));
         htmlContent.guideLinks = htmlUtils.highlightCurrentGuide(parameters.guideLinks, parameters.guideFile);
-        htmlContent.icon = parameters.icon.file;
+        if (parameters.icon) {
+            htmlContent.icon = parameters.icon.file;
+        }
         var output = render({
             "content": htmlContent,
             "title": properties["name"]
