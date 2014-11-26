@@ -20,5 +20,12 @@
     Main Guide Content
 */
 #main {
+    position: relative;
+}
 
+#main-icon {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    right: 0;
 }

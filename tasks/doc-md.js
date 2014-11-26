@@ -21,10 +21,15 @@ module.exports = function(grunt) {
         }, properties, 1);
         var render = jade.compileFile(path.join(parameters.webDir, "index.jade"));
         htmlContent.guideLinks = htmlUtils.highlightCurrentGuide(parameters.guideLinks, parameters.guideFile);
+        htmlContent.icon = parameters.icon.file;
         var output = render({
             "content": htmlContent,
             "title": properties["name"]
         });
+        if (parameters.icon.style) {
+            output = htmlUtils.applyIconStyle(output, parameters.icon.style);
+        }
+
         grunt.file.write(path.join(parameters.output, parameters.guideFile), output);
     };
 
@@ -175,7 +180,8 @@ module.exports = function(grunt) {
                     guideFile: guide.link,
                     guideLinks: guideLinksHtml,
                     output: options.output,
-                    docDir: path.join(options.docs, guide.directory)
+                    docDir: path.join(options.docs, guide.directory),
+                    icon: guide.propertiesFile.icon
                 });
             });
         });

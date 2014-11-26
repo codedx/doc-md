@@ -119,6 +119,15 @@ var highlightCurrentGuide = function(guideLinksHtml, guideLink) {
     return $.root().html();
 };
 
+var applyIconStyle = function(fullHtml, properties) {
+    var $ = cheerio.load(fullHtml);
+    var icon = $('#main-icon');
+    for (var style in properties) {
+        icon.css(style, properties[style]);
+    }
+    return $.root().html();
+};
+
 var buildId = function(name) {
     return name.replace(idRegex, '');
 };
@@ -127,5 +136,6 @@ module.exports = {
     buildAndLinkHtml: buildAndLinkHtml,
     buildGuideLinks: buildGuideLinks,
     highlightCurrentGuide: highlightCurrentGuide,
+    applyIconStyle: applyIconStyle,
     buildId: buildId
 };
