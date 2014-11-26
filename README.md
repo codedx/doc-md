@@ -59,49 +59,71 @@ To run doc-md, run `grunt ${task}`, where ${task} is the name of the task specif
 Markdown Structure
 ------------------
 
-The markdown-content directory (or whatever you choose to call it) needs to follow the convention expected by Doc-MD. In general, that convention is as follows:
+The markdown-content directory (or whatever you choose to call it) needs to contain a valid properties.yml file that defines the organization of the final output document and its Table of Contents. 
+###properties.yml
+####name
+A properties.yml file should contain, at minimum a `name` property, defining the human-readable name for the guide (or section). If this property is used within a `toc` element, doc-md will insert a header into the final html output as well as an element within the table of contents for that name.
+####description
+A description of the guide. This is currently unused.
+####referenceId
+In the case of a top-level element, this will be the name given to the guide file. For instances nested within the `toc` element, this will be used as the id of the section in question and can be used within the markup for purposes of linking within the overall document.
+####icon
+A set of properties which define the icon for the guide. This should at minimum include a `file` property which should contain the path to the icon's location within the resources directory. It can also include a `style` property, which can include any valid css property. The icon is placed within a standard <img> tag, so keep that in mind when using styles.
+####toc
+This defines the structure to be used when including content within the guide. It's an array of items. Each item needs to define, at minimum a `file` property (which should be the relative path to a markdown file) or a `name` property (which will appear as the name of the section, in both the table of contents and the main content). It can also optionally contain a `referenceId` or its own `toc` property.
+####normalizeHeaders
+By default, doc-md will attempt to normalize the headers used throughout the final html document so the header levels are consistent with the structure defined in the table of contents. If `normalizeHeaders: false` appears in the properties file, doc-md will not normalize headers.
+
+###Example
+Given the following directory structure:
   - markdown-content
     - resources
+      - icon.png
     - guide1
       - properties.yml
       - section1.md
       - section2.md
       - section3
-        - properties.yml
         - subsection3.1.md
         - subsection3.2.md
       - section4
-        - properties.yml
-        - base.md
+        - section4.md
         - subsection4.1.md
       - section5.md
 
-There are several rules to note: 
-
-First, it's a nested structure, and that structure will be followed when building the Table of Contents for the html help document. For each direct subdirectory of the markdown-content directory, a separate html document will be generated. The resources directory is where all images, etc. should be placed. This will be copied as-is into the build directory.
-
-Second, each directory has its own properties.yml file. This file currently defines the human-readable name for the section (meaning users aren't limited to the character set allowed by the filesystem), as well as the Table of Contents for that directory. While it would be nice if this was unnecessary, we decided it was the best way for the author of the content to define the order in which the markdown files should appear.
-
-Third, for sections (such as section4 in the example above) where there's a need for both subsections as well as content that should appear before any subsections, but not as a part of any of them, you can define a base.md file. In directories with such a file, the content of the base.md file will appear before any of the subsections at a higher header level.
-
-Users should also note that the numbers in the example above are for purposes of illustration only--they're not necessary.
-
-###Sample properties.yml
+a properties.yml file could be
 ```
-name: "Sample Guide"
-description: "Description of sample guide"
+name: Guide One
+icon:
+  file: icon.png
+  style:
+    height: 32px
 toc:
   -
     file: section1.md
-    name: First Section
   -
     file: section2.md
-    name: Section Two
+    referenceId: section_two
   -
-    file: section3
+    name: section3
+    referenceId: section3
+    toc:
+      -
+        file:subsection3.1.md
+      -
+        file:subsection3.2.md
   -
-    file: section4
+    file: section4.md
+    toc:
+      -
+        file: subsection4.1.md
   -
     file: section5.md
-    name: The Last Section
 ```
+
+Users should also note that the numbers in the example above are for purposes of illustration only--they're not necessary.
+
+Custom Styles and JavaScript
+----------------------------
+
+Users can define custom stylesheets and JavaScript files to be included in the final document. The `cssDir` and `jsDir` properties in the grunt config can be set to the directory where stylesheets and scripts are located. The contents of these directories will be concatenated into a single "user.css" and "user.js" files and included in the final document. These properties default to "css" and "js", respectively.
