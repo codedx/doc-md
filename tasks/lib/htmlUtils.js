@@ -108,6 +108,17 @@ var buildGuideLinks = function(guides) {
     return $.root().html();
 };
 
+var highlightCurrentGuide = function(guideLinksHtml, guideLink) {
+    var $ = cheerio.load(guideLinksHtml);
+    $('a').each(function() {
+        var link = $(this);
+        if (link.attr('href') === guideLink) {
+            link.addClass('docmd-selected-guide');
+        }
+    });
+    return $.root().html();
+};
+
 var buildId = function(name) {
     return name.replace(idRegex, '');
 };
@@ -115,5 +126,6 @@ var buildId = function(name) {
 module.exports = {
     buildAndLinkHtml: buildAndLinkHtml,
     buildGuideLinks: buildGuideLinks,
+    highlightCurrentGuide: highlightCurrentGuide,
     buildId: buildId
 };

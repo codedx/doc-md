@@ -20,7 +20,7 @@ module.exports = function(grunt) {
             'normalizeHeaders': normalizeHeaders
         }, properties, 1);
         var render = jade.compileFile(path.join(parameters.webDir, "index.jade"));
-        htmlContent.guideLinks = parameters.guideLinks;
+        htmlContent.guideLinks = htmlUtils.highlightCurrentGuide(parameters.guideLinks, parameters.guideFile);
         var output = render({
             "content": htmlContent,
             "title": properties["name"]

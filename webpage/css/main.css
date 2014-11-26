@@ -1,11 +1,24 @@
+/*
+    Multiple Guide Links
+*/
+.docmd-selected-guide {
+    font-weight: bold;
+}
+
+/*
+    Table of Contents
+*/
+#toc {
+    background-color: #e8e8e8;
+}
 .docmd-toc-list {
     list-style-type: none;
 }
 
-#toc {
-    background-color: #e8e8e8;
-}
 
+/*
+    Main Guide Content
+*/
 #main {
 
 }
