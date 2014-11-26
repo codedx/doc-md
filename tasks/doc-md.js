@@ -28,7 +28,7 @@ module.exports = function(grunt) {
             "content": htmlContent,
             "title": properties["name"]
         });
-        if (parameters.icon.style) {
+        if (parameters.icon && parameters.icon.style) {
             output = htmlUtils.applyIconStyle(output, parameters.icon.style);
         }
 
