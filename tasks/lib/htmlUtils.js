@@ -103,7 +103,7 @@ var buildGuideLinks = function(guides) {
             .addClass("all-guides-list-item list-group-item")
             .attr('href', guide.link)
             .text(guide.text);
-        $.root().append(element.root().html())
+        $('div').append(element.root().html())
     });
     return $.root().html();
 };

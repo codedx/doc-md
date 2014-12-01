@@ -2,6 +2,7 @@
   "name": "doc-md",
   "version": "0.1.0",
   "dependencies": {
-    "bootstrap": "~3.3.1"
+    "bootstrap": "~3.3.1",
+    "sticky-kit": "~1.1.1"
   }
 }

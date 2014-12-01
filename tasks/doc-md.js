@@ -21,12 +21,14 @@ module.exports = function(grunt) {
         }, properties, 1);
         var render = jade.compileFile(path.join(parameters.webDir, "index.jade"));
         htmlContent.guideLinks = htmlUtils.highlightCurrentGuide(parameters.guideLinks, parameters.guideFile);
-        htmlContent.icon = parameters.icon.file;
+        if (parameters.icon) {
+            htmlContent.icon = parameters.icon.file;
+        }
         var output = render({
             "content": htmlContent,
             "title": properties["name"]
         });
-        if (parameters.icon.style) {
+        if (parameters.icon && parameters.icon.style) {
             output = htmlUtils.applyIconStyle(output, parameters.icon.style);
         }
 
@@ -50,7 +52,10 @@ module.exports = function(grunt) {
                     {
                         expand: true,
                         cwd: path.join(__dirname, "../bower_components"),
-                        src: ["*/dist/**/*"],
+                        src: [
+                            "sticky-kit/jquery.sticky-kit.min.js",
+                            "*/dist/**/*"
+                        ],
                         dest: path.join(options.output, 'lib')
                     }
                 ]
@@ -174,6 +179,9 @@ module.exports = function(grunt) {
             var guideLinksHtml = htmlUtils.buildGuideLinks(guides);
 
             guides.forEach(function(guide) {
+                if (guide.propertiesFile.icon) {
+                    guide.propertiesFile.icon.file = options.resourcesName + '/' + guide.propertiesFile.icon.file;
+                }
                 processMarkdown({
                     webDir: options.webDir,
                     properties: guide.propertiesFile,

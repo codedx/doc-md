@@ -7,22 +7,28 @@ html(lang="en")
       link(rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css")
       style
          include css/main.css
-      style(rel="stylesheet" href="lib/user.css")
+      link(rel="stylesheet" href="lib/user.css")
 
    body
+
       div.container-fluid
          div.row
-            div#toc.col-md-3
+
+            span#guide-toc-toggle.glyphicon.glyphicon-th-list.hidden-md.hidden-lg(data-toggle="collapse")
+
+            div#toc.col-md-3.col-xs-10
                h3 Guides
                != content.guideLinks
-               h3 Table of Contents
+                  h3 Table of Contents
                != content.toc
-            div#main.col-md-9
+            div#main.col-md-9.col-xs-12
                img#main-icon(src=content.icon )
                != content.main
 
 
+
       script(src="lib/jquery/dist/jquery.min.js")
+      script(src="lib/sticky-kit/jquery.sticky-kit.min.js")
       script(src="lib/bootstrap/dist/js/bootstrap.min.js")
       script
          include js/main.js

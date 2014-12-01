@@ -1,3 +1,14 @@
+#docmd-container {
+
+}
+
+#guide-toc-toggle {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2;
+}
+
 /*
     Multiple Guide Links
 */
@@ -9,7 +20,8 @@
     Table of Contents
 */
 #toc {
-    background-color: #e8e8e8;
+    background-color: white;
+    z-index: 1;
 }
 .docmd-toc-list {
     list-style-type: none;
@@ -21,11 +33,12 @@
 */
 #main {
     position: relative;
+    border-left: 1px solid #dddddd;
 }
 
 #main-icon {
     display: inline-block;
     position: absolute;
-    top: 0;
-    right: 0;
+    top: 5px;
+    right: 5px;
 }
