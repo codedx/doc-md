@@ -12,15 +12,16 @@ html(lang="en")
    body
 
       div.container-fluid
-         div.row
+         div#docmd-content.row
 
             span#guide-toc-toggle.glyphicon.glyphicon-th-list.hidden-md.hidden-lg(data-toggle="collapse")
 
-            div#toc.col-md-3.col-xs-10
-               h3 Guides
-               != content.guideLinks
-                  h3 Table of Contents
-               != content.toc
+            div.col-md-3.col-xs-10
+               div#toc
+                  h3 Guides
+                  != content.guideLinks
+                     h3 Table of Contents
+                  != content.toc
             div#main.col-md-9.col-xs-12
                img#main-icon(src=content.icon )
                != content.main
