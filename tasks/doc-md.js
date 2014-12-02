@@ -15,24 +15,25 @@ module.exports = function(grunt) {
         var docDir = parameters.docDir;
         var properties = parameters.properties;
         var normalizeHeaders = properties['normalizeHeaders'] === undefined ? true : properties['normalizeHeaders'];
-        var htmlContent = buildAndLinkHtml({
+        var compiledContent = buildAndLinkHtml({
             'docDir': docDir,
             'normalizeHeaders': normalizeHeaders
         }, properties, 1);
         var render = jade.compileFile(path.join(parameters.webDir, "index.jade"));
-        htmlContent.guideLinks = htmlUtils.highlightCurrentGuide(parameters.guideLinks, parameters.guideFile);
+        compiledContent.guideLinks = htmlUtils.highlightCurrentGuide(parameters.guideLinks, parameters.guideFile + '.html');
         if (parameters.icon) {
-            htmlContent.icon = parameters.icon.file;
+            compiledContent.icon = parameters.icon.file;
         }
         var output = render({
-            "content": htmlContent,
+            "content": compiledContent,
             "title": properties["name"]
         });
         if (parameters.icon && parameters.icon.style) {
             output = htmlUtils.applyIconStyle(output, parameters.icon.style);
         }
 
-        grunt.file.write(path.join(parameters.output, parameters.guideFile), output);
+        grunt.file.write(path.join(parameters.output, parameters.guideFile + '.md'), compiledContent['markdown']);
+        grunt.file.write(path.join(parameters.output, parameters.guideFile + '.html'), output);
     };
 
     var copyResources = function (options) {
@@ -170,7 +171,7 @@ module.exports = function(grunt) {
                     }
                 });
                 guide.propertiesFile = properties;
-                guide.link = properties['referenceId'] || htmlUtils.buildId(properties['name']) + '.html';
+                guide.link = properties['referenceId'] || htmlUtils.buildId(properties['name']);
                 guide.text = properties['name'];
                 guide.directory = directory;
                 guides.push(guide);

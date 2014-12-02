@@ -7,7 +7,29 @@ var converter = new pagedown.Converter();
 
 var idRegex = /[^\w]/g;
 
-var allHeaders = 'h1, h2, h3, h4, h5, h6';
+var setextHeader1Regex = /^(.+)[ \t]*\n=+[ \t]*\n+/gm;
+var setextHeader2Regex = /^(.+)[ \t]*\n-+[ \t]*\n+/gm;
+
+/*    /
+    ^(\#{1,6})      // $1 = string of #'s
+        [ \t]*
+    (.+?)           // $2 = Header text
+    [ \t]*
+    \#*             // optional closing #'s (not counted)
+    \n+
+    /gm */
+var atxHeaderRegex = /^(\#{1,6})[ \t]*(.+?)[ \t]*\#*\n+/gm;
+var markdownHeaders = [
+    '',
+    "#",
+    "##",
+    "###",
+    "####",
+    "#####",
+    "######"
+];
+
+var allHtmlHeaders = 'h1, h2, h3, h4, h5, h6';
 
 var buildHeader = function(name, depth) {
     var header = '<h' + (depth) + '>' + name + '</h' + depth + '>';
@@ -29,15 +51,29 @@ var buildSimpleTocLink = function(name, anchorId) {
         .text(name);
 };
 
-var adjustHeaders = function($, depth) {
-    $(allHeaders).each(function(index, element) {
-        var level = element.tagName.match(/\d/);
-        var newLevel = parseInt(level) + depth - 1;
+var adjustMarkdownHeaders = function(markdown, depth) {
+    markdown = markdown.replace(atxHeaderRegex, function (wholeMatch, m1, m2) {
+        var currentLevel = m1.length;
+        var newLevel = depth + currentLevel - 1;
         if (newLevel > 6) {
             newLevel = 6;
         }
-        element.tagName = 'h' + newLevel;
+        return '\n' + markdownHeaders[newLevel] + m2 + '\n\n';
+        }
+    );
+
+    markdown = markdown.replace(setextHeader1Regex, function(wholeMatch, m1) {
+        return '\n' + markdownHeaders[depth] + m1 + '\n\n';
     });
+
+    markdown = markdown.replace(setextHeader1Regex, function(wholeMatch, m1) {
+        var newLevel = depth + 1;
+        if (newLevel > 6) {
+            newLevel = 6;
+        }
+        return '\n' + markdownHeaders[newLevel] + m1 + '\n\n';
+    });
+    return markdown;
 };
 
 var buildAndLinkHtml = function(options, properties, depth) {
@@ -48,21 +84,23 @@ var buildAndLinkHtml = function(options, properties, depth) {
     var tocSections = cheerio.load('');
     var name,
         header,
-        $;
+        $,
+        markdown;
     if (properties["name"]) {
         name = properties["name"];
         $ = cheerio.load(buildHeader(name, depth));
-        header = $(allHeaders).first();
+        markdown = markdownHeaders[depth] + name + '\n\n';
+        header = $(allHtmlHeaders).first();
     } else if (properties["file"]) {
         var sectionFile = path.join(options['docDir'], properties["file"]);
-        var markdown = fs.readFileSync(sectionFile, {"encoding": "utf-8"});
+        markdown = fs.readFileSync(sectionFile, {"encoding": "utf-8"});
+        if (options['normalizeHeaders']) {
+            markdown = adjustMarkdownHeaders(markdown, depth);
+        }
         var markdownHtml = converter.makeHtml(markdown);
         $ = cheerio.load('');
         $.root().append(markdownHtml);
-        if (options["normalizeHeaders"]) {
-            adjustHeaders($, depth);
-        }
-        header = $(allHeaders).first();
+        header = $(allHtmlHeaders).first();
         name = header.text();
     } else  {
         grunt.fail.warn("A toc list contains an element that is neither a name nor a file");
@@ -80,6 +118,7 @@ var buildAndLinkHtml = function(options, properties, depth) {
 
             appendTocElement(tocSections, sectionContent["toc"]);
             $.root().append(sectionContent['main']);
+            markdown = markdown + sectionContent['markdown'];
         });
     }
 
@@ -91,7 +130,8 @@ var buildAndLinkHtml = function(options, properties, depth) {
 
     return {
         "main": $.root().html(),
-        "toc": toc.html()
+        "toc": toc.html(),
+        "markdown": markdown
     };
 };
 
@@ -101,7 +141,7 @@ var buildGuideLinks = function(guides) {
         var element = cheerio.load('<a>');
         element('a')
             .addClass("all-guides-list-item list-group-item")
-            .attr('href', guide.link)
+            .attr('href', guide.link + '.html')
             .text(guide.text);
         $('div').append(element.root().html())
     });
