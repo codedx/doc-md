@@ -57,12 +57,12 @@ var adjustMarkdownHeaders = function(markdown, depth) {
         if (newLevel > 6) {
             newLevel = 6;
         }
-        return '\n' + markdownHeaders[newLevel] + m2 + '\n\n';
+        return '\n' + markdownHeaders[newLevel] + ' ' + m2 + '\n\n';
         }
     );
 
     markdown = markdown.replace(setExtHeader1Regex, function(wholeMatch, m1) {
-        return '\n' + markdownHeaders[depth] + m1 + '\n\n';
+        return '\n' + markdownHeaders[depth] + ' ' + m1 + '\n\n';
     });
 
     markdown = markdown.replace(setExtHeader2Regex, function(wholeMatch, m1) {
@@ -70,7 +70,7 @@ var adjustMarkdownHeaders = function(markdown, depth) {
         if (newLevel > 6) {
             newLevel = 6;
         }
-        return '\n' + markdownHeaders[newLevel] + m1 + '\n\n';
+        return '\n' + markdownHeaders[newLevel] + ' ' + m1 + '\n\n';
     });
     return markdown;
 };
