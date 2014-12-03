@@ -52,7 +52,9 @@ module.exports = function(grunt) {
                 if (stderr) {
                     console.warn("Error creating " + parameters.guideFile + ".pdf with Pandoc: " + stderr);
                 }
-                grunt.file.delete(markdownFile, {force: true});
+                if (!parameters.keepMarkdown) {
+                    grunt.file.delete(markdownFile, {force: true});
+                }
                 grunt.file.copy(
                     path.join(parameters.output, parameters.guideFile + '.pdf'),
                     path.join(parameters.pdfOutput, parameters.guideFile + '.pdf')
@@ -242,6 +244,7 @@ module.exports = function(grunt) {
                     output: options.output,
                     pdfOutput: options.pdfOutput,
                     pdfPandocTemplate: options.pdfPandocTemplate,
+                    keepMarkdown: options.keepMarkdown,
                     markPdfFinished: function() {markPdfFinished(index);},
                     docDir: path.join(options.docs, guide.directory),
                     icon: guide.propertiesFile.icon
