@@ -117,7 +117,7 @@ var buildAndLinkHtml = function(options, properties, depth) {
 
             appendTocElement(tocSections, sectionContent["toc"]);
             $.root().append(sectionContent['main']);
-            markdown = markdown + sectionContent['markdown'];
+            markdown = markdown + '\n\n' + sectionContent['markdown'];
         });
     }
 
