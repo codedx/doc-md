@@ -200,11 +200,12 @@ module.exports = function(grunt) {
             dataDirs.forEach(function(directory) {
                 var guide = {};
                 var propsFile = path.join(options.docs, directory, "properties.yml");
-                var properties = yaml.safeLoad(fs.readFileSync(propsFile), {
-                    onWarning: function() {
-                        grunt.fail.warn("Could not properly parse " + propsFile + "as a yaml file");
-                    }
-                });
+                try {
+                    var properties = yaml.safeLoad(fs.readFileSync(propsFile), {});
+                } catch (YMLException) {
+                    grunt.warn("Could not properly parse " + propsFile + " as a yaml file");
+                }
+
                 guide.propertiesFile = properties;
                 guide.link = properties['referenceId'] || htmlUtils.buildId(properties['name']);
                 guide.text = properties['name'];
