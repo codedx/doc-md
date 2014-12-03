@@ -1,6 +1,6 @@
 {
   "name": "grunt-doc-md",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A system for building an html help system based on multiple help files written in markdown",
   "keywords": [
     "gruntplugin",
@@ -8,11 +8,11 @@
     "help",
     "html"
   ],
-  "homepage": "https://github.com/secdec/Doc-MD",
+  "homepage": "https://github.com/secdec/doc-md",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/secdec/Doc-MD"
+    "url": "https://github.com/secdec/doc-md"
   },
   "dependencies": {
     "cheerio": "*",
