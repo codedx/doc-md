@@ -66,7 +66,7 @@ var adjustMarkdownHeaders = function(markdown, depth) {
         return '\n' + markdownHeaders[depth] + m1 + '\n\n';
     });
 
-    markdown = markdown.replace(setextHeader1Regex, function(wholeMatch, m1) {
+    markdown = markdown.replace(setextHeader2Regex, function(wholeMatch, m1) {
         var newLevel = depth + 1;
         if (newLevel > 6) {
             newLevel = 6;
