@@ -7,8 +7,8 @@ var converter = new pagedown.Converter();
 
 var idRegex = /[^\w]/g;
 
-var setextHeader1Regex = /^(.+)[ \t]*\n=+[ \t]*\n+/gm;
-var setextHeader2Regex = /^(.+)[ \t]*\n-+[ \t]*\n+/gm;
+var setExtHeader1Regex = /^(.+)[ \t]*\n=+[ \t]*\n+/gm;
+var setExtHeader2Regex = /^(.+)[ \t]*\n-+[ \t]*\n+/gm;
 
 /*    /
     ^(\#{1,6})      // $1 = string of #'s
@@ -32,8 +32,7 @@ var markdownHeaders = [
 var allHtmlHeaders = 'h1, h2, h3, h4, h5, h6';
 
 var buildHeader = function(name, depth) {
-    var header = '<h' + (depth) + '>' + name + '</h' + depth + '>';
-    return header;
+    return '<h' + (depth) + '>' + name + '</h' + depth + '>';
 };
 
 var appendTocElement = function(toc, link) {
@@ -62,11 +61,11 @@ var adjustMarkdownHeaders = function(markdown, depth) {
         }
     );
 
-    markdown = markdown.replace(setextHeader1Regex, function(wholeMatch, m1) {
+    markdown = markdown.replace(setExtHeader1Regex, function(wholeMatch, m1) {
         return '\n' + markdownHeaders[depth] + m1 + '\n\n';
     });
 
-    markdown = markdown.replace(setextHeader2Regex, function(wholeMatch, m1) {
+    markdown = markdown.replace(setExtHeader2Regex, function(wholeMatch, m1) {
         var newLevel = depth + 1;
         if (newLevel > 6) {
             newLevel = 6;
@@ -163,7 +162,9 @@ var applyIconStyle = function(fullHtml, properties) {
     var $ = cheerio.load(fullHtml);
     var icon = $('#main-icon');
     for (var style in properties) {
-        icon.css(style, properties[style]);
+        if (properties.hasOwnProperty(style)) {
+            icon.css(style, properties[style]);
+        }
     }
     return $.root().html();
 };

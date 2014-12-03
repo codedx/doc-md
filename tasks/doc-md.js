@@ -6,6 +6,7 @@ module.exports = function(grunt) {
         path = require('path'),
         fs = require('fs'),
         yaml = require('js-yaml'),
+        cp = require('child_process'),
         htmlUtils = require('./lib/htmlUtils');
 
     var buildAndLinkHtml = htmlUtils.buildAndLinkHtml;
@@ -32,7 +33,34 @@ module.exports = function(grunt) {
             output = htmlUtils.applyIconStyle(output, parameters.icon.style);
         }
 
-        grunt.file.write(path.join(parameters.output, parameters.guideFile + '.md'), compiledContent['markdown']);
+        if (parameters.pdfOutput) {
+            var markdownFile = path.join(parameters.output, parameters.guideFile + '.md');
+            grunt.file.write(markdownFile, compiledContent['markdown']);
+
+            var pandocExec = 'pandoc ' +
+                '-o ' + parameters.guideFile + '.pdf' +
+                    ' -s ' + parameters.guideFile + '.md';
+            if (parameters.pdfPandocTemplate) {
+                pandocExec = pandocExec +' --template=' + parameters.pdfPandocTemplate;
+            }
+            cp.exec(pandocExec, {
+                cwd: parameters.output
+            }, function(error, stdout, stderr) {
+                if (error) {
+                    grunt.warn("Error invoking pandoc: " + error);
+                }
+                if (stderr) {
+                    console.warn("Error creating " + parameters.guideFile + ".pdf with Pandoc: " + stderr);
+                }
+                grunt.file.delete(markdownFile, {force: true});
+                grunt.file.copy(
+                    path.join(parameters.output, parameters.guideFile + '.pdf'),
+                    path.join(parameters.pdfOutput, parameters.guideFile + '.pdf')
+                );
+                grunt.file.delete(path.join(parameters.output, parameters.guideFile + '.pdf'), {force: true});
+                parameters.markPdfFinished();
+            });
+        }
         grunt.file.write(path.join(parameters.output, parameters.guideFile + '.html'), output);
     };
 
@@ -85,6 +113,9 @@ module.exports = function(grunt) {
             ],
             docmd_output: [
                 options.output
+            ],
+            docmd_pdf_output: [
+                options.pdfOutput
             ]
         });
         grunt.task.run('clean:docmd_lib', 'clean:docmd_output');
@@ -160,6 +191,8 @@ module.exports = function(grunt) {
 
         handleWebDependencies(options);
 
+        copyResources(options);
+
         grunt.registerTask('docmd_markdown', function() {
             var guides = [];
             dataDirs.forEach(function(directory) {
@@ -179,7 +212,25 @@ module.exports = function(grunt) {
 
             var guideLinksHtml = htmlUtils.buildGuideLinks(guides);
 
-            guides.forEach(function(guide) {
+            if (options.pdfOutput) {
+                var done = this.async();
+                if (options.pdfPandocTemplate) {
+                    var pdfPandocTemplate =  path.join(options.output, options.pdfPandocTemplate + '.latex');
+                    grunt.file.copy(options.pdfPandocTemplate + '.latex', pdfPandocTemplate);
+                }
+
+                var markPdfFinished = function(guideIndex) {
+                    guides[guideIndex].pdfFinished = true;
+                    if (guides.every(function(guide) { return guide.pdfFinished; })) {
+                        if (options.pdfPandocTemplate) {
+                            grunt.file.delete(pdfPandocTemplate, {force: true});
+                        }
+                        done(true);
+                    }
+                }
+            }
+
+            guides.forEach(function(guide, index) {
                 if (guide.propertiesFile.icon) {
                     guide.propertiesFile.icon.file = options.resourcesName + '/' + guide.propertiesFile.icon.file;
                 }
@@ -189,6 +240,9 @@ module.exports = function(grunt) {
                     guideFile: guide.link,
                     guideLinks: guideLinksHtml,
                     output: options.output,
+                    pdfOutput: options.pdfOutput,
+                    pdfPandocTemplate: options.pdfPandocTemplate,
+                    markPdfFinished: function() {markPdfFinished(index);},
                     docDir: path.join(options.docs, guide.directory),
                     icon: guide.propertiesFile.icon
                 });
@@ -196,7 +250,7 @@ module.exports = function(grunt) {
         });
         grunt.task.run('docmd_markdown');
 
-        copyResources(options);
+
     });
 };
 
