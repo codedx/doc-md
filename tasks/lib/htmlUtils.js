@@ -1,9 +1,11 @@
 var cheerio = require('cheerio'),
     fs = require('fs'),
     path = require('path'),
-    pagedown = require('pagedown');
+    marked = require('marked');
 
-var converter = new pagedown.Converter();
+marked.setOptions({
+
+});
 
 var idRegex = /[^\w]/g;
 
@@ -96,7 +98,7 @@ var buildAndLinkHtml = function(options, properties, depth) {
         if (options['normalizeHeaders']) {
             markdown = adjustMarkdownHeaders(markdown, depth);
         }
-        var markdownHtml = converter.makeHtml(markdown);
+        var markdownHtml = marked(markdown);
         $ = cheerio.load('');
         $.root().append(markdownHtml);
         header = $(allHtmlHeaders).first();
