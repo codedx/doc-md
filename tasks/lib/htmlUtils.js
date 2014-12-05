@@ -139,11 +139,24 @@ var buildAndLinkHtml = function(options, properties, depth) {
 var buildGuideLinks = function(guides) {
     var $ = cheerio.load('<div id="all-guides-list" class="list-group">');
     guides.forEach(function(guide) {
-        var element = cheerio.load('<a>');
+        var element = cheerio.load('<a><span></span></a>');
         element('a')
             .addClass("all-guides-list-item list-group-item")
-            .attr('href', guide.link + '.html')
+            .attr('href', guide.link + '.html');
+        element('span')
+            .addClass('docmd-guide-title')
             .text(guide.text);
+
+        if (guide.propertiesFile.guideIcon) {
+            var icon = cheerio.load('<img>');
+            icon('img')
+                .addClass('docmd-guide-icon')
+                .attr('src', guide.propertiesFile.guideIcon);
+
+            element('a')
+                .prepend(icon.root().html());
+        }
+
         $('div').append(element.root().html())
     });
     return $.root().html();

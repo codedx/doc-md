@@ -11,23 +11,24 @@ html(lang="en")
 
    body
 
-      div.container
+      div.container-fluid
          div#docmd-content.row
 
-            span#guide-toc-toggle.glyphicon.glyphicon-th-list.hidden-md.hidden-lg(
+            div#guide-toc-toggle.btn.btn-default.hidden-md.hidden-lg(
                data-toggle="collapse" data-target="#navigation")
+               span.glyphicon.glyphicon-th-list
 
 
-            div#navigation-container.col-md-3.col-xs-10
+            div#navigation-container.col-md-3.col-xs-12
                div#navigation
                   div#docmd-guides
-                     h3 Guides
+                     h3.docmd-guide-title Guides
                      != content.guideLinks
                   div#docmd-toc
-                     h3 Table of Contents
+                     h3.docmd-toc-title Table of Contents
                      != content.toc
             div#main.col-md-9.col-xs-12
-               img#main-icon(src=content.icon )
+               img#main-brand-icon(src=content.brandIcon )
                != content.main
 
 

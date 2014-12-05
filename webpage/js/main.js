@@ -1,4 +1,5 @@
 (function() {
+
     var navContainer = $('#navigation-container');
     var navigation = $('#navigation');
 
@@ -12,7 +13,6 @@
         }
         navigation.css('width', navContainer.width());
 
-        //TODO this may not be necessary
         navigation.css('height', window.innerHeight);
 
 
@@ -23,5 +23,6 @@
 
     resetNavigation();
 
-
+    this.docMd = {};
+    this.docMd.resetNavigation = resetNavigation;
 }());

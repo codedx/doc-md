@@ -22,15 +22,15 @@ module.exports = function(grunt) {
         }, properties, 1);
         var render = jade.compileFile(path.join(parameters.webDir, "index.jade"));
         compiledContent.guideLinks = htmlUtils.highlightCurrentGuide(parameters.guideLinks, parameters.guideFile + '.html');
-        if (parameters.icon) {
-            compiledContent.icon = parameters.icon.file;
+        if (parameters.brandIcon) {
+            compiledContent.brandIcon = parameters.brandIcon.file;
         }
         var output = render({
             "content": compiledContent,
             "title": properties["name"]
         });
-        if (parameters.icon && parameters.icon.style) {
-            output = htmlUtils.applyIconStyle(output, parameters.icon.style);
+        if (parameters.brandIcon && parameters.brandIcon.style) {
+            output = htmlUtils.applyIconStyle(output, parameters.brandIcon.style);
         }
 
         if (parameters.pdfOutput) {
@@ -210,6 +210,7 @@ module.exports = function(grunt) {
                 guide.link = properties['referenceId'] || htmlUtils.buildId(properties['name']);
                 guide.text = properties['name'];
                 guide.directory = directory;
+
                 guides.push(guide);
             });
 
@@ -234,8 +235,9 @@ module.exports = function(grunt) {
             }
 
             guides.forEach(function(guide, index) {
-                if (guide.propertiesFile.icon) {
-                    guide.propertiesFile.icon.file = options.resourcesName + '/' + guide.propertiesFile.icon.file;
+                if (guide.propertiesFile.brandIcon) {
+                    guide.propertiesFile.brandIcon.file =
+                        path.join(options.resourcesName, guide.propertiesFile.brandIcon.file);
                 }
                 processMarkdown({
                     webDir: options.webDir,
@@ -248,7 +250,7 @@ module.exports = function(grunt) {
                     keepMarkdown: options.keepMarkdown,
                     markPdfFinished: function() {markPdfFinished(index);},
                     docDir: path.join(options.docs, guide.directory),
-                    icon: guide.propertiesFile.icon
+                    brandIcon: guide.propertiesFile.brandIcon
                 });
             });
         });
