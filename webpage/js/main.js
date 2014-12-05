@@ -1,32 +1,27 @@
 (function() {
-    var toc = $('#toc');
-    var toggle = $('#guide-toc-toggle');
+    var navContainer = $('#navigation-container');
+    var navigation = $('#navigation');
 
-    var first = true;
-
-    toc.stick_in_parent({
-        "parent": "#docmd-content"
-    }).on('sticky_kit:stick', function(e) {
-            if (first) {
-                first = false;
-                console.log("toggle display: " + toggle.css('display'));
-                toc.parent()
-                    .attr('id', 'sticky-toc-parent')
-                    .addClass('collapse in');
-                if (toggle.css('display') !== 'none') {
-                    toggle.trigger('click');
-                }
-            }
-
-        });
-
-    $(window).resize(function() {
+    var resetNavigation = function() {
         if (! ($('#guide-toc-toggle:visible').length)) {
-            toc.parent().addClass('in');
+            navigation
+                .removeClass('collapse in');
+        } else {
+            navigation
+                .addClass('collapse');
         }
+        navigation.css('width', navContainer.width());
+
+        //TODO this may not be necessary
+        navigation.css('height', window.innerHeight);
+
+
+    };
+    $(window).resize(function() {
+        resetNavigation();
     });
 
-    toggle.attr('data-target', '#sticky-toc-parent');
+    resetNavigation();
 
 
 }());

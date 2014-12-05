@@ -11,17 +11,21 @@ html(lang="en")
 
    body
 
-      div.container-fluid
+      div.container
          div#docmd-content.row
 
-            span#guide-toc-toggle.glyphicon.glyphicon-th-list.hidden-md.hidden-lg(data-toggle="collapse")
+            span#guide-toc-toggle.glyphicon.glyphicon-th-list.hidden-md.hidden-lg(
+               data-toggle="collapse" data-target="#navigation")
 
-            div.col-md-3.col-xs-10
-               div#toc
-                  h3 Guides
-                  != content.guideLinks
+
+            div#navigation-container.col-md-3.col-xs-10
+               div#navigation
+                  div#docmd-guides
+                     h3 Guides
+                     != content.guideLinks
+                  div#docmd-toc
                      h3 Table of Contents
-                  != content.toc
+                     != content.toc
             div#main.col-md-9.col-xs-12
                img#main-icon(src=content.icon )
                != content.main
@@ -29,7 +33,6 @@ html(lang="en")
 
 
       script(src="lib/jquery/dist/jquery.min.js")
-      script(src="lib/sticky-kit/jquery.sticky-kit.min.js")
       script(src="lib/bootstrap/dist/js/bootstrap.min.js")
       script
          include js/main.js
