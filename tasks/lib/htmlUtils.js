@@ -140,6 +140,7 @@ var buildGuideLinks = function(guides) {
     var $ = cheerio.load('<div id="all-guides-list" class="list-group">');
     guides.forEach(function(guide) {
         var element = cheerio.load('<a><span></span></a>');
+        var icon;
         element('a')
             .addClass("all-guides-list-item list-group-item")
             .attr('href', guide.link + '.html');
@@ -148,15 +149,19 @@ var buildGuideLinks = function(guides) {
             .text(guide.text);
 
         if (guide.propertiesFile.guideIcon) {
-            var icon = cheerio.load('<img>');
+            icon = cheerio.load('<img>');
             icon('img')
                 .addClass('docmd-guide-icon')
                 .attr('src', guide.propertiesFile.guideIcon);
 
-            element('a')
-                .prepend(icon.root().html());
-        }
 
+        } else {
+            icon = cheerio.load('<span>');
+            icon('span')
+                .addClass('glyphicon glyphicon-book')
+        }
+        element('a')
+            .prepend(icon.root().html());
         $('div').append(element.root().html())
     });
     return $.root().html();
