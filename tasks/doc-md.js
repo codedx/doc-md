@@ -84,7 +84,6 @@ module.exports = function(grunt) {
                         expand: true,
                         cwd: path.join(__dirname, "../bower_components"),
                         src: [
-                            "sticky-kit/jquery.sticky-kit.min.js",
                             "*/dist/**/*"
                         ],
                         dest: path.join(options.output, 'lib')

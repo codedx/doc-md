@@ -145,7 +145,7 @@ var buildGuideLinks = function(guides) {
             .addClass("all-guides-list-item list-group-item")
             .attr('href', guide.link + '.html');
         element('span')
-            .addClass('docmd-guide-title')
+            .addClass('docmd-guide-name')
             .text(guide.text);
 
         if (guide.propertiesFile.guideIcon) {

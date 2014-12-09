@@ -1,5 +1,5 @@
 #docmd-container {
-
+    max-width: 1080px;
 }
 
 #guide-toc-toggle {
@@ -14,15 +14,25 @@
 */
 #navigation-container {
     position: relative;
+    display: inline-block;
+    width: 350px;
 }
 
 #navigation {
     background-color: white;
     z-index: 1;
     position: fixed;
-    overflow: auto;
+    overflow-y: auto;
     top: 0;
     bottom: 0;
+    left: 0;
+
+    transition-property: left;
+    transition-duration: 1s;
+    transition-timing-function: ease;
+    -webkit-transition-property: left;
+    -webkit-transition-duration: 1s;
+    -webkit-transition-timing-function: ease;
 }
 
 
@@ -57,6 +67,8 @@
 */
 #main {
     position: relative;
+    display: inline-block;
+    max-width: 729px;
     border-left: 1px solid #dddddd;
 }
 
@@ -65,4 +77,10 @@
     position: absolute;
     top: 5px;
     right: 5px;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+    margin: 0 auto;
 }
