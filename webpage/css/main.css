@@ -15,7 +15,8 @@
 #navigation-container {
     position: relative;
     display: inline-block;
-    width: 350px;
+    width: 325px;
+    padding-left: 10px;
 }
 
 #navigation {
@@ -68,15 +69,32 @@
 #main {
     position: relative;
     display: inline-block;
-    max-width: 729px;
+    max-width: 652px;
     border-left: 1px solid #dddddd;
+    padding-left: 10px;
+}
+
+.docmd-title {
+    font-weight: 500;
+    font-size: 36px;
+    border-bottom: 1px solid #dddddd;
+}
+
+#guide-branding {
+    position: absolute;
+    top: 5px;
+    right: 0;
 }
 
 #main-brand-icon {
-    display: inline-block;
-    position: absolute;
-    top: 5px;
-    right: 5px;
+    display: block;
+    height: 24px;
+    margin: 0 0 3px auto;
+}
+
+#version-number {
+    font-size: 12px;
+    height: 24px;
 }
 
 img {

@@ -34,7 +34,11 @@ var markdownHeaders = [
 var allHtmlHeaders = 'h1, h2, h3, h4, h5, h6';
 
 var buildHeader = function(name, depth) {
-    return '<h' + (depth) + '>' + name + '</h' + depth + '>';
+    if (depth < 1) {
+        return '<div class="docmd-title">' + name + '</div>';
+    } else {
+        return '<h' + (depth) + '>' + name + '</h' + depth + '>';
+    }
 };
 
 var appendTocElement = function(toc, link) {
@@ -90,7 +94,7 @@ var buildAndLinkHtml = function(options, properties, depth) {
     if (properties["name"]) {
         name = properties["name"];
         $ = cheerio.load(buildHeader(name, depth));
-        markdown = markdownHeaders[depth] + name + '\n\n';
+        markdown = depth > 0 ? markdownHeaders[depth] + name + '\n\n' : "" ;
         header = $(allHtmlHeaders).first();
     } else if (properties["file"]) {
         var sectionFile = path.join(options['docDir'], properties["file"]);
@@ -178,17 +182,6 @@ var highlightCurrentGuide = function(guideLinksHtml, guideLink) {
     return $.root().html();
 };
 
-var applyIconStyle = function(fullHtml, properties) {
-    var $ = cheerio.load(fullHtml);
-    var icon = $('#main-icon');
-    for (var style in properties) {
-        if (properties.hasOwnProperty(style)) {
-            icon.css(style, properties[style]);
-        }
-    }
-    return $.root().html();
-};
-
 var buildId = function(name) {
     return name.replace(idRegex, '');
 };
@@ -197,6 +190,5 @@ module.exports = {
     buildAndLinkHtml: buildAndLinkHtml,
     buildGuideLinks: buildGuideLinks,
     highlightCurrentGuide: highlightCurrentGuide,
-    applyIconStyle: applyIconStyle,
     buildId: buildId
 };

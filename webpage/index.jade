@@ -27,7 +27,11 @@ html(lang="en")
                   h3.docmd-toc-title Table of Contents
                   != content.toc
          div#main
-            img#main-brand-icon(src=content.brandIcon )
+            div#guide-branding
+               img#main-brand-icon(src=content.brandIcon )
+               div#version-number
+                  | Version
+                  = ' ' + content.versionNumber
             != content.main
 
 

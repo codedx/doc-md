@@ -12,40 +12,29 @@ module.exports = function(grunt) {
     var buildAndLinkHtml = htmlUtils.buildAndLinkHtml;
 
 
-    var processMarkdown = function(parameters) {
-        var docDir = parameters.docDir;
-        var properties = parameters.properties;
-        var normalizeHeaders = properties['normalizeHeaders'] === undefined ? true : properties['normalizeHeaders'];
-        var compiledContent = buildAndLinkHtml({
-            'docDir': docDir,
-            'normalizeHeaders': normalizeHeaders
-        }, properties, 1);
-        var render = jade.compileFile(path.join(parameters.webDir, "index.jade"));
-        compiledContent.guideLinks = htmlUtils.highlightCurrentGuide(parameters.guideLinks, parameters.guideFile + '.html');
-        if (parameters.brandIcon) {
-            compiledContent.brandIcon = parameters.brandIcon.file;
-        }
-        var output = render({
-            "content": compiledContent,
-            "title": properties["name"]
-        });
-        if (parameters.brandIcon && parameters.brandIcon.style) {
-            output = htmlUtils.applyIconStyle(output, parameters.brandIcon.style);
-        }
-
+    var buildPdf = function (parameters, compiledContent) {
         if (parameters.pdfOutput) {
             var markdownFile = path.join(parameters.output, parameters.guideFile + '.md');
             grunt.file.write(markdownFile, compiledContent['markdown']);
 
             var pandocExec = 'pandoc ' +
                 '-o ' + parameters.guideFile + '.pdf' +
-                    ' -s ' + parameters.guideFile + '.md';
+                ' -s ' + parameters.guideFile + '.md';
+
+            pandocExec = pandocExec + ' --toc --number-sections';
+
             if (parameters.pdfPandocTemplate) {
-                pandocExec = pandocExec +' --template=' + parameters.pdfPandocTemplate;
+                pandocExec = pandocExec + ' --template=' + parameters.pdfPandocTemplate;
+                if (parameters.properties.pdfFooter) {
+                    pandocExec = pandocExec + ' --variable=docFooter:"' + parameters.properties.pdfFooter + '"';
+                }
+                if (parameters.properties.brandIcon) {
+                    pandocExec = pandocExec + ' --variable=docFooterIcon:"' + parameters.properties.brandIcon + '"';
+                }
             }
             cp.exec(pandocExec, {
                 cwd: parameters.output
-            }, function(error, stdout, stderr) {
+            }, function (error, stdout, stderr) {
                 if (error) {
                     grunt.warn("Error invoking pandoc: " + error);
                 }
@@ -63,6 +52,33 @@ module.exports = function(grunt) {
                 parameters.markPdfFinished();
             });
         }
+    };
+    var processMarkdown = function(parameters) {
+        var docDir = parameters.docDir;
+        var properties = parameters.properties;
+        var normalizeHeaders = properties['normalizeHeaders'] === undefined ? true : properties['normalizeHeaders'];
+        var compiledContent = buildAndLinkHtml({
+            'docDir': docDir,
+            'normalizeHeaders': normalizeHeaders
+        }, properties, 0);
+        var render = jade.compileFile(path.join(parameters.webDir, "index.jade"));
+        compiledContent.guideLinks = htmlUtils.highlightCurrentGuide(parameters.guideLinks, parameters.guideFile + '.html');
+        if (properties.brandIcon) {
+            compiledContent.brandIcon = properties.brandIcon;
+        }
+        if (parameters.versionNumber) {
+            compiledContent.versionNumber = parameters.versionNumber;
+        }
+        var output = render({
+            "content": compiledContent,
+            "title": properties["name"]
+        });
+        //if (parameters.brandIcon && parameters.brandIcon.style) {
+        //    output = htmlUtils.applyIconStyle(output, parameters.brandIcon.style);
+        //}
+
+        buildPdf(parameters, compiledContent);
+
         grunt.file.write(path.join(parameters.output, parameters.guideFile + '.html'), output);
     };
 
@@ -225,7 +241,7 @@ module.exports = function(grunt) {
                 var markPdfFinished = function(guideIndex) {
                     guides[guideIndex].pdfFinished = true;
                     if (guides.every(function(guide) { return guide.pdfFinished; })) {
-                        if (options.pdfPandocTemplate) {
+                        if (options.pdfPandocTemplate && !options.keepMarkdown) {
                             grunt.file.delete(pdfPandocTemplate, {force: true});
                         }
                         done(true);
@@ -234,10 +250,6 @@ module.exports = function(grunt) {
             }
 
             guides.forEach(function(guide, index) {
-                if (guide.propertiesFile.brandIcon) {
-                    guide.propertiesFile.brandIcon.file =
-                        path.join(options.resourcesName, guide.propertiesFile.brandIcon.file);
-                }
                 processMarkdown({
                     webDir: options.webDir,
                     properties: guide.propertiesFile,
@@ -249,7 +261,7 @@ module.exports = function(grunt) {
                     keepMarkdown: options.keepMarkdown,
                     markPdfFinished: function() {markPdfFinished(index);},
                     docDir: path.join(options.docs, guide.directory),
-                    brandIcon: guide.propertiesFile.brandIcon
+                    versionNumber: options.versionNumber
                 });
             });
         });
