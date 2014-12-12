@@ -7,12 +7,13 @@ module.exports = function(grunt) {
         fs = require('fs'),
         yaml = require('js-yaml'),
         cp = require('child_process'),
-        htmlUtils = require('./lib/htmlUtils');
+        htmlUtils = require('./lib/htmlUtils'),
+        slang = require('slang');
 
     var buildAndLinkHtml = htmlUtils.buildAndLinkHtml;
 
 
-    var buildPdf = function (parameters, compiledContent) {
+    var buildPdfWithPandoc = function (parameters, compiledContent) {
         if (parameters.pdfOutput) {
             var markdownFile = path.join(parameters.output, parameters.guideFile + '.md');
             grunt.file.write(markdownFile, compiledContent['markdown']);
@@ -53,6 +54,65 @@ module.exports = function(grunt) {
             });
         }
     };
+
+    var convertObjectToArgs = function(options) {
+        var args = [];
+        Object.keys(options).forEach(function(key) {
+            if (typeof options[key] === 'object') {
+                Object.keys(options[key]).forEach(function(k) {
+                    args.push('--' + slang.dasherize((key)));
+                    args.push(k);
+                    args.push(options[key][k]);
+                })
+            } else {
+                args.push('--' + slang.dasherize(key));
+                if (typeof options[key] === 'string' || typeof options[key] === 'number') {
+                    args.push(options[key]);
+                }
+            }
+        });
+        return args;
+    };
+
+    var buildPdf = function (parameters) {
+        if (parameters.pdfOutput) {
+
+            var args = convertObjectToArgs({
+                pageSize: "Letter",
+                marginTop: "1in",
+                marginLeft: "1in",
+                marginRight: "1in",
+                marginBottom: "1in",
+                footerCenter: "[page]"
+            }).concat([parameters.guideFile + '.print.html', parameters.guideFile + '.pdf']);
+
+
+            //if (parameters.properties.pdfFooter) {
+            //    wkExec = wkExec + ' --variable=docFooter:"' + parameters.properties.pdfFooter + '"';
+            //}
+            //if (parameters.properties.brandIcon) {
+            //    wkExec = wkExec + ' --variable=docFooterIcon:"' + parameters.properties.brandIcon + '"';
+            //}
+
+            cp.execFile('wkhtmltopdf', args, {
+                cwd: parameters.output
+            }, function (error, stdout, stderr) {
+                if (error) {
+                    grunt.warn("Error invoking wkhtmltopdf: " + error);
+                }
+                if (stderr) {
+                    console.warn("Error creating " + parameters.guideFile + ".pdf with wkhtmltopdf: " + stderr);
+                }
+                grunt.file.copy(
+                    path.join(parameters.output, parameters.guideFile + '.pdf'),
+                    path.join(parameters.pdfOutput, parameters.guideFile + '.pdf')
+                );
+                grunt.file.delete(path.join(parameters.output, parameters.guideFile + '.pdf'), {force: true});
+                parameters.markPdfFinished();
+            });
+        }
+    };
+
     var processMarkdown = function(parameters) {
         var docDir = parameters.docDir;
         var properties = parameters.properties;
@@ -61,7 +121,8 @@ module.exports = function(grunt) {
             'docDir': docDir,
             'normalizeHeaders': normalizeHeaders
         }, properties, 0);
-        var render = jade.compileFile(path.join(parameters.webDir, "index.jade"));
+        var renderForWeb = jade.compileFile(path.join(parameters.webDir, "index.jade"));
+        var renderForPrint = jade.compileFile(path.join(parameters.webDir, "printer.jade"));
         compiledContent.guideLinks = htmlUtils.highlightCurrentGuide(parameters.guideLinks, parameters.guideFile + '.html');
         if (properties.brandIcon) {
             compiledContent.brandIcon = properties.brandIcon;
@@ -69,7 +130,11 @@ module.exports = function(grunt) {
         if (parameters.versionNumber) {
             compiledContent.versionNumber = parameters.versionNumber;
         }
-        var output = render({
+        var output = renderForWeb({
+            "content": compiledContent,
+            "title": properties["name"]
+        });
+        var printOutput = renderForPrint({
             "content": compiledContent,
             "title": properties["name"]
         });
@@ -77,7 +142,11 @@ module.exports = function(grunt) {
         //    output = htmlUtils.applyIconStyle(output, parameters.brandIcon.style);
         //}
 
-        buildPdf(parameters, compiledContent);
+        //buildPdf(parameters, compiledContent);
+
+        var printHtml = path.join(parameters.output, parameters.guideFile + ".print.html");
+        grunt.file.write(printHtml, printOutput);
+        buildPdf(parameters);
 
         grunt.file.write(path.join(parameters.output, parameters.guideFile + '.html'), output);
     };

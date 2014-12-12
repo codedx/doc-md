@@ -1,0 +1,11 @@
+#docmd-container {
+    font-family: times, serif;
+}
+
+#main {
+    max-width: 1080px;
+}
+
+img {
+    max-width: 100%;
+}
