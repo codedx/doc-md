@@ -42,6 +42,17 @@ module.exports = function(grunt) {
                         right: parameters.properties.brandIcon
                     }
                 }));
+            var renderCover = jade.compileFile(path.join(parameters.webDir, "cover.jade"));
+            var coverUrl = path.resolve(path.join(parameters.output, parameters.guideFile + '.cover.html'));
+            grunt.file.write(coverUrl,
+                renderCover({
+                    content: {
+                        title: parameters.properties.name,
+                        icon: parameters.properties.brandIcon,
+                        version: parameters.versionNumber,
+                        date: (new Date()).toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'})
+                    }
+                }));
 
             var args = convertObjectToArgs({
                 pageSize: "Letter",
@@ -51,15 +62,16 @@ module.exports = function(grunt) {
                 marginBottom: "1in",
                 footerHtml: 'file://' + footerUrl,
                 printMediaType: true
-            }).concat([parameters.guideFile + '.print.html', parameters.guideFile + '.pdf']);
+            })
+                .concat(['cover', 'file://' + coverUrl])
+                .concat(['toc']).concat(
+                convertObjectToArgs({
+                    xslStyleSheet: path.resolve(path.join(parameters.webDir, 'toc.xsl'))
+                }))
+                .concat([parameters.guideFile + '.print.html', parameters.guideFile + '.pdf']);
 
 
-            //if (parameters.properties.pdfFooter) {
-            //    wkExec = wkExec + ' --variable=docFooter:"' + parameters.properties.pdfFooter + '"';
-            //}
-            //if (parameters.properties.brandIcon) {
-            //    wkExec = wkExec + ' --variable=docFooterIcon:"' + parameters.properties.brandIcon + '"';
-            //}
+
 
             cp.execFile('wkhtmltopdf', args, {
                 cwd: parameters.output
@@ -105,11 +117,6 @@ module.exports = function(grunt) {
             "content": compiledContent,
             "title": properties["name"]
         });
-        //if (parameters.brandIcon && parameters.brandIcon.style) {
-        //    output = htmlUtils.applyIconStyle(output, parameters.brandIcon.style);
-        //}
-
-        //buildPdf(parameters, compiledContent);
 
         var printHtml = path.join(parameters.output, parameters.guideFile + ".print.html");
         grunt.file.write(printHtml, printOutput);
