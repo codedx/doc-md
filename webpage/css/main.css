@@ -1,3 +1,15 @@
 .docmd-toc-list {
     list-style-type: none;
 }
+
+.docmd-title {
+    font-weight: 500;
+    font-size: 36px;
+    border-bottom: 1px solid #dddddd;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+    margin: 0 auto;
+}

@@ -65,11 +65,7 @@
     padding-left: 10px;
 }
 
-.docmd-title {
-    font-weight: 500;
-    font-size: 36px;
-    border-bottom: 1px solid #dddddd;
-}
+
 
 #guide-branding {
     position: absolute;
@@ -88,8 +84,3 @@
     height: 24px;
 }
 
-img {
-    max-width: 100%;
-    display: block;
-    margin: 0 auto;
-}

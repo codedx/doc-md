@@ -12,49 +12,6 @@ module.exports = function(grunt) {
 
     var buildAndLinkHtml = htmlUtils.buildAndLinkHtml;
 
-
-    var buildPdfWithPandoc = function (parameters, compiledContent) {
-        if (parameters.pdfOutput) {
-            var markdownFile = path.join(parameters.output, parameters.guideFile + '.md');
-            grunt.file.write(markdownFile, compiledContent['markdown']);
-
-            var pandocExec = 'pandoc ' +
-                '-o ' + parameters.guideFile + '.pdf' +
-                ' -s ' + parameters.guideFile + '.md';
-
-            pandocExec = pandocExec + ' --toc --number-sections';
-
-            if (parameters.pdfPandocTemplate) {
-                pandocExec = pandocExec + ' --template=' + parameters.pdfPandocTemplate;
-                if (parameters.properties.pdfFooter) {
-                    pandocExec = pandocExec + ' --variable=docFooter:"' + parameters.properties.pdfFooter + '"';
-                }
-                if (parameters.properties.brandIcon) {
-                    pandocExec = pandocExec + ' --variable=docFooterIcon:"' + parameters.properties.brandIcon + '"';
-                }
-            }
-            cp.exec(pandocExec, {
-                cwd: parameters.output
-            }, function (error, stdout, stderr) {
-                if (error) {
-                    grunt.warn("Error invoking pandoc: " + error);
-                }
-                if (stderr) {
-                    console.warn("Error creating " + parameters.guideFile + ".pdf with Pandoc: " + stderr);
-                }
-                if (!parameters.keepMarkdown) {
-                    grunt.file.delete(markdownFile, {force: true});
-                }
-                grunt.file.copy(
-                    path.join(parameters.output, parameters.guideFile + '.pdf'),
-                    path.join(parameters.pdfOutput, parameters.guideFile + '.pdf')
-                );
-                grunt.file.delete(path.join(parameters.output, parameters.guideFile + '.pdf'), {force: true});
-                parameters.markPdfFinished();
-            });
-        }
-    };
-
     var convertObjectToArgs = function(options) {
         var args = [];
         Object.keys(options).forEach(function(key) {
@@ -76,6 +33,15 @@ module.exports = function(grunt) {
 
     var buildPdf = function (parameters) {
         if (parameters.pdfOutput) {
+            var renderFooter = jade.compileFile(path.join(parameters.webDir, "footer.jade"));
+            var footerUrl = path.resolve(path.join(parameters.output, parameters.guideFile + '.footer.html'));
+            grunt.file.write(footerUrl,
+                renderFooter({
+                    content: {
+                        left: parameters.properties.pdfFooter,
+                        right: parameters.properties.brandIcon
+                    }
+                }));
 
             var args = convertObjectToArgs({
                 pageSize: "Letter",
@@ -83,7 +49,8 @@ module.exports = function(grunt) {
                 marginLeft: "1in",
                 marginRight: "1in",
                 marginBottom: "1in",
-                footerCenter: "[page]"
+                footerHtml: 'file://' + footerUrl,
+                printMediaType: true
             }).concat([parameters.guideFile + '.print.html', parameters.guideFile + '.pdf']);
 
 
