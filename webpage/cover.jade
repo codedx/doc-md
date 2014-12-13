@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+html(lang="en")
+    head
+        meta(http-equiv="Content-Type", content="text/html", charset="utf-8")
+        style
+            include css/main.css
+        style
+            include css/printer.css
+        style
+            include lib/user.css
+    body
+        div#cover-title
+           != content.title
+        div#cover-icon
+           img.cover-icon-img(src!= content.icon)
+        div#cover-version
+           != content.version
+        div#cover-date
+           != content.date

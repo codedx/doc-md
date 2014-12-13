@@ -1,0 +1,57 @@
+@media print {
+    @page {
+        /*margin: 3in;*/
+        orphans: 2;
+        widows: 2;
+    }
+
+    #docmd-container {
+        font-family: times, serif;
+    }
+
+    #docmd-toc {
+        break-after: always;
+    }
+
+    #main {
+        max-width: 768px;
+    }
+
+
+
+    img {
+        max-width: 100%;
+    }
+
+    h1,h2,h3,h4,h5,h6 {
+        break-after: avoid;
+
+    }
+
+    #footer {
+        width: 768px;
+        opacity: .5;
+    }
+
+    div.footer {
+        display: block;
+        vertical-align: baseline;
+    }
+
+    div.footer-left {
+        float: left;
+    }
+
+    div.footer-center {
+        width: 40px;
+        margin: 0 auto;
+    }
+
+    div.footer-right {
+        float: right;
+    }
+    .footer-icon {
+        width: 100px;
+    }
+}
+
