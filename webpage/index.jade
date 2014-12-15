@@ -32,8 +32,7 @@ html(lang="en")
             div#guide-branding
                img#main-brand-icon(src=content.brandIcon )
                div#version-number
-                  | Version
-                  = ' ' + content.versionNumber
+                  = content.versionNumber ? ' ' + content.versionNumber : content.versionNumber
             != content.main
 
 
