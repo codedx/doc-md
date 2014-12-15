@@ -39,7 +39,7 @@ module.exports = function(grunt) {
                 renderFooter({
                     content: {
                         left: parameters.properties.pdfFooter,
-                        right: path.join('file://', parameters.output, parameters.properties.brandIcon)
+                        right: path.join('file://', path.resolve(parameters.output, parameters.properties.brandIcon))
                     }
                 }));
             var renderCover = jade.compileFile(path.join(parameters.webDir, "cover.jade"));
@@ -48,7 +48,7 @@ module.exports = function(grunt) {
                 renderCover({
                     content: {
                         title: parameters.properties.name,
-                        icon: path.join('file://', parameters.output, parameters.properties.brandIcon),
+                        icon: path.join('file://', path.resolve(parameters.output, parameters.properties.brandIcon)),
                         version: parameters.versionNumber,
                         date: (new Date()).toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'})
                     }
