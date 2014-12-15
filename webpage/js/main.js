@@ -5,13 +5,11 @@
     var toggle = $('#guide-toc-toggle');
 
     var hideNavigation = function() {
-        navigation.addClass('hidden');
-        navigation.css('left', -1 * navContainer.width() - 1);
+        navigation.removeClass('in');
     };
 
     var showNavigation = function() {
-        navigation.removeClass('hidden');
-        navigation.css('left', 0);
+        navigation.addClass('in');
     };
 
     var resetNavigation = function() {
@@ -31,10 +29,10 @@
     });
 
     toggle.click(function(event) {
-        if (navigation.is('.hidden')) {
-            showNavigation();
-        } else {
+        if (navigation.is('.in')) {
             hideNavigation();
+        } else {
+            showNavigation();
         }
     });
 

@@ -26,14 +26,23 @@
     overflow-y: auto;
     top: 0;
     bottom: 0;
-    left: 0;
+
+
+}
+
+#navigation.docmd-hidden {
+    left: -326px;
 
     transition-property: left;
-    transition-duration: 1s;
+    transition-duration: .3s;
     transition-timing-function: ease;
     -webkit-transition-property: left;
-    -webkit-transition-duration: 1s;
+    -webkit-transition-duration: .3s;
     -webkit-transition-timing-function: ease;
+}
+
+#navigation.docmd-hidden.in {
+    left: 0;
 }
 
 
