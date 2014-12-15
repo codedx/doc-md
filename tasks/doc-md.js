@@ -60,10 +60,10 @@ module.exports = function(grunt) {
                 marginLeft: "1in",
                 marginRight: "1in",
                 marginBottom: "1in",
-                footerHtml: 'file://' + footerUrl,
+                footerHtml: 'file:///' + footerUrl,
                 printMediaType: true
             })
-                .concat(['cover', 'file://' + coverUrl])
+                .concat(['cover', 'file:///' + coverUrl])
                 .concat(['toc']).concat(
                 convertObjectToArgs({
                     xslStyleSheet: path.resolve(path.join(parameters.webDir, 'toc.xsl'))
