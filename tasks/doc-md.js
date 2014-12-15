@@ -87,6 +87,10 @@ module.exports = function(grunt) {
                     path.join(parameters.pdfOutput, parameters.guideFile + '.pdf')
                 );
                 grunt.file.delete(path.join(parameters.output, parameters.guideFile + '.pdf'), {force: true});
+                grunt.file.delete(footerUrl, {force: true});
+                grunt.file.delete(coverUrl, {force: true});
+                grunt.file.delete(path.join(parameters.output, parameters.guideFile + ".print.html"), {force: true});
+
                 parameters.markPdfFinished();
             });
         }
@@ -276,17 +280,10 @@ module.exports = function(grunt) {
 
             if (options.pdfOutput) {
                 var done = this.async();
-                if (options.pdfPandocTemplate) {
-                    var pdfPandocTemplate =  path.join(options.output, options.pdfPandocTemplate + '.latex');
-                    grunt.file.copy(options.pdfPandocTemplate + '.latex', pdfPandocTemplate);
-                }
 
                 var markPdfFinished = function(guideIndex) {
                     guides[guideIndex].pdfFinished = true;
                     if (guides.every(function(guide) { return guide.pdfFinished; })) {
-                        if (options.pdfPandocTemplate && !options.keepMarkdown) {
-                            grunt.file.delete(pdfPandocTemplate, {force: true});
-                        }
                         done(true);
                     }
                 }
