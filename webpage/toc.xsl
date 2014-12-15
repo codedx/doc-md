@@ -10,19 +10,19 @@
     <html>
       <head>
         <title>Table of Contents</title>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="Content-Type" content="text/html" charset="utf-8" />
         <style>
           h1 {
-            text-align: center;
-            font-size: 20px;
-            font-family: times, serif;
+          text-align: center;
+          font-size: 24px;
+          font-family: serif;
           }
           div {border-bottom: 1px dotted rgb(200,200,200);}
           span {float: right;}
           li {list-style: none;}
           ul {
-            font-size: 14px;
-            font-family: times, serif;
+          font-size: 14px;
+          font-family: serif;
           }
 
           ul {padding-left: 0em;}
