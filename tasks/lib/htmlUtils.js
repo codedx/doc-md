@@ -9,8 +9,8 @@ marked.setOptions({
 
 var idRegex = /[^\w]/g;
 
-var setExtHeader1Regex = /^(.+)[ \t]*\n=+[ \t]*\n+/gm;
-var setExtHeader2Regex = /^(.+)[ \t]*\n-+[ \t]*\n+/gm;
+var setExtHeader1Regex = /^(.+)[ \t]*\r?\n=+[ \t]*(?:\r?\n)+/gm;
+var setExtHeader2Regex = /^(.+)[ \t]*\r?\n-+[ \t]*(?:\r?\n)+/gm;
 
 /*    /
     ^(\#{1,6})      // $1 = string of #'s
@@ -20,7 +20,7 @@ var setExtHeader2Regex = /^(.+)[ \t]*\n-+[ \t]*\n+/gm;
     \#*             // optional closing #'s (not counted)
     \n+
     /gm */
-var atxHeaderRegex = /^(\#{1,6})[ \t]*(.+?)[ \t]*\#*\n+/gm;
+var atxHeaderRegex = /^(\#{1,6})[ \t]*(.+?)[ \t]*\#*(?:\r?\n)+/gm;
 var markdownHeaders = [
     '',
     "#",
