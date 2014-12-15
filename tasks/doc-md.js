@@ -80,7 +80,9 @@ module.exports = function(grunt) {
                     grunt.warn("Error invoking wkhtmltopdf: " + error);
                 }
                 if (stderr) {
-                    console.warn("Error creating " + parameters.guideFile + ".pdf with wkhtmltopdf: " + stderr);
+                    //wkhtmltopdf writes all status output to stderr
+                    console.log("Creating " + parameters.guideFile + ".pdf with wkhtmltopdf:");
+                    console.log(stderr);
                 }
                 grunt.file.copy(
                     path.join(parameters.output, parameters.guideFile + '.pdf'),

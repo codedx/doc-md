@@ -20,8 +20,7 @@
     "js-yaml": "*",
     "marked": "^0.3.2",
     "pagedown": "*",
-    "slang": "^0.3.0",
-    "wkhtmltopdf": "^0.1.5"
+    "slang": "^0.3.0"
   },
   "peerDependencies": {
     "grunt": "~0.4.5",
