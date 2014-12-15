@@ -71,9 +71,9 @@ module.exports = function(grunt) {
                 .concat([parameters.guideFile + '.print.html', parameters.guideFile + '.pdf']);
 
 
+            var execCommand = 'wkhtmltopdf ' + args.join(' ');
 
-
-            cp.execFile('wkhtmltopdf', args, {
+            cp.exec(execCommand, {
                 cwd: parameters.output
             }, function (error, stdout, stderr) {
                 if (error) {
