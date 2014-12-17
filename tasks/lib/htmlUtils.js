@@ -105,6 +105,10 @@ var buildAndLinkHtml = function(options, properties, depth) {
         var markdownHtml = marked(markdown);
         $ = cheerio.load('');
         $.root().append(markdownHtml);
+        $(allHtmlHeaders).each(function() {
+            var header = $(this);
+            header.attr('id', header.text().replace(idRegex, ''));
+        });
         header = $(allHtmlHeaders).first();
         name = header.text();
     } else  {
