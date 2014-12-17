@@ -18,7 +18,6 @@
         } else {
             showNavigation();
         }
-        navigation.css('width', navContainer.width());
 
         navigation.css('height', window.innerHeight);
 
