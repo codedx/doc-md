@@ -1,95 +1,92 @@
 #docmd-container {
-    max-width: 1085px;
+	max-width: 1085px;
 }
 
 #guide-toc-toggle {
-    position: fixed;
-    top: 5px;
-    left: 5px;
-    z-index: 2;
+	position: fixed;
+	top: 5px;
+	left: 5px;
+	z-index: 2;
 }
 
 /*
-    Navigation
+	Navigation
 */
 #navigation-container {
-    position: relative;
-    display: inline-block;
-    width: 330px;
-    padding-left: 10px;
+	position: relative;
+	display: inline-block;
+	width: 330px;
+	padding-left: 10px;
 }
 
 #navigation {
-    background-color: white;
-    z-index: 1;
-    position: fixed;
-    overflow-y: auto;
-    top: 0;
-    bottom: 0;
-    width: 330px;
+	background-color: white;
+	z-index: 1;
+	position: fixed;
+	overflow-y: auto;
+	top: 0;
+	bottom: 0;
+	width: 330px;
 
 }
 
 #navigation.docmd-hidden {
-    left: -326px;
+	left: -326px;
 
-    transition-property: left;
-    transition-duration: .3s;
-    transition-timing-function: ease;
-    -webkit-transition-property: left;
-    -webkit-transition-duration: .3s;
-    -webkit-transition-timing-function: ease;
+	transition-property: left;
+	transition-duration: .3s;
+	transition-timing-function: ease;
+	-webkit-transition-property: left;
+	-webkit-transition-duration: .3s;
+	-webkit-transition-timing-function: ease;
 }
 
 #navigation.docmd-hidden.in {
-    left: 0;
+	left: 0;
 }
 
-
 /*
-    Multiple Guide Links
+	Multiple Guide Links
 */
 .docmd-selected-guide {
-    font-weight: bold;
+	font-weight: bold;
 }
 
 .docmd-guide-icon {
-    position: relative;
-    display: inline-block;
+	position: relative;
+	display: inline-block;
 }
 
 .docmd-guide-title {
-    display: inline-block;
-    margin-left: 5px;
+	display: inline-block;
+	margin-left: 5px;
 }
 
 /*
-    Main Guide Content
+	Main Guide Content
 */
 #main {
-    position: relative;
-    display: inline-block;
-    max-width: 652px;
-    border-left: 1px solid #dddddd;
-    padding-left: 10px;
+	position: relative;
+	display: inline-block;
+	max-width: 652px;
+	border-left: 1px solid #dddddd;
+	padding-left: 10px;
 }
 
-
-
 #guide-branding {
-    position: absolute;
-    top: 5px;
-    right: 0;
+	position: absolute;
+	top: 5px;
+	right: 0;
 }
 
 #main-brand-icon {
-    display: block;
-    height: 24px;
-    margin: 0 0 3px auto;
+	display: block;
+	height: 24px;
+	margin: 0 0 3px auto;
 }
 
 #version-number {
-    font-size: 12px;
-    height: 24px;
+	font-size: 12px;
+	height: 24px;
 }
 

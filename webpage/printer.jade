@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 html(lang="en")
-    head
-        meta(http-equiv="Content-Type", content="text/html", charset="utf-8")
-        title
-            = title
-        //link(rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css")
-        style
-            include css/main.css
-        style
-            include css/printer.css
-        link(rel="stylesheet" href="lib/user.css")
-    body
-        div#docmd-content
-            //div#docmd-toc
-            //    h3.docmd-toc-title Table of Contents
-            //    != content.toc
-            div#main
-                != content.main
-        script(src="lib/jquery/dist/jquery.min.js")
-        //script(src="lib/bootstrap/dist/js/bootstrap.min.js")
+	head
+		meta(http-equiv="Content-Type", content="text/html", charset="utf-8")
+		title
+			= title
+		//link(rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css")
+		style
+			include css/main.css
+		style
+			include css/printer.css
+		link(rel="stylesheet" href="lib/user.css")
+	body
+		div#docmd-content
+			//div#docmd-toc
+			//    h3.docmd-toc-title Table of Contents
+			//    != content.toc
+			div#main
+				!= content.main
+		script(src="lib/jquery/dist/jquery.min.js")
+		//script(src="lib/bootstrap/dist/js/bootstrap.min.js")
 
-        script(src="lib/user.js")
+		script(src="lib/user.js")

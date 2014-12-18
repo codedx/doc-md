@@ -1,44 +1,44 @@
 <!DOCTYPE html>
 html(lang="en")
-   head
-      meta(http-equiv="Content-Type", content="text/html", charset="utf-8")
-      title
-         = title
-      link(rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css")
-      style
-         include css/main.css
-      style
-         include css/web.css
-      link(rel="stylesheet" href="lib/user.css")
+	head
+		meta(http-equiv="Content-Type", content="text/html", charset="utf-8")
+		title
+		= title
+		link(rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css")
+		style
+			include css/main.css
+		style
+			include css/web.css
+		link(rel="stylesheet" href="lib/user.css")
 
-   body
-
-
-      div#docmd-content
-
-         div#guide-toc-toggle.btn.btn-default.hidden-md.hidden-lg
-            span.glyphicon.glyphicon-th-list
+	body
 
 
-         div#navigation-container
-            div#navigation.docmd-hidden.in
-               div#docmd-guides
-                  h3.docmd-guide-title Guides
-                  != content.guideLinks
-               div#docmd-toc
-                  h3.docmd-toc-title Table of Contents
-                  != content.toc
-         div#main
-            div#guide-branding
-               img#main-brand-icon(src=content.brandIcon )
-               div#version-number
-                  = content.versionNumber ? ' ' + content.versionNumber : content.versionNumber
-            != content.main
+		div#docmd-content
+
+			div#guide-toc-toggle.btn.btn-default.hidden-md.hidden-lg
+				span.glyphicon.glyphicon-th-list
+
+
+			div#navigation-container
+				div#navigation.docmd-hidden.in
+					div#docmd-guides
+						h3.docmd-guide-title Guides
+					!= content.guideLinks
+					div#docmd-toc
+						h3.docmd-toc-title Table of Contents
+					!= content.toc
+			div#main
+				div#guide-branding
+					img#main-brand-icon(src=content.brandIcon )
+					div#version-number
+					= content.versionNumber ? ' ' + content.versionNumber : content.versionNumber
+			!= content.main
 
 
 
-      script(src="lib/jquery/dist/jquery.min.js")
-      //script(src="lib/bootstrap/dist/js/bootstrap.min.js")
-      script
-         include js/main.js
-      script(src="lib/user.js")
+		script(src="lib/jquery/dist/jquery.min.js")
+		//script(src="lib/bootstrap/dist/js/bootstrap.min.js")
+		script
+			include js/main.js
+		script(src="lib/user.js")
