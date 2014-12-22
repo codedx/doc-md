@@ -3,7 +3,7 @@ html(lang="en")
 	head
 		meta(http-equiv="Content-Type", content="text/html", charset="utf-8")
 		title
-		= title
+			= title
 		link(rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css")
 		style
 			include css/main.css
@@ -24,16 +24,16 @@ html(lang="en")
 				div#navigation.docmd-hidden.in
 					div#docmd-guides
 						h3.docmd-guide-title Guides
-					!= content.guideLinks
+						!= content.guideLinks
 					div#docmd-toc
 						h3.docmd-toc-title Table of Contents
-					!= content.toc
+						!= content.toc
 			div#main
 				div#guide-branding
 					img#main-brand-icon(src=content.brandIcon )
 					div#version-number
-					= content.versionNumber ? ' ' + content.versionNumber : content.versionNumber
-			!= content.main
+						= content.versionNumber ? ' ' + content.versionNumber : content.versionNumber
+				!= content.main
 
 
 
