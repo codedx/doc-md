@@ -1,7 +1,7 @@
-Doc-MD
+Doc MD
 ======
 
-Doc-MD is a grunt.js plugin designed to take multiple help or guide files, written in markdown, and compile them into a single html help document, complete with a Table of Contents that links the sections of the document. While it would certainly be possible to build a single markdown document, as systems grow in complexity (and their documentation grows along with them), it's often easier to maintain up to date documentation if it's broken up by section. However, no one likes clicking through multiple pages of user guides (especially if a page only has a couple paragraphs). Doc-MD solves that problem.
+Doc MD is a grunt.js plugin designed to take multiple help or guide files, written in markdown, and compile them into a single html help document, complete with a Table of Contents that links the sections of the document. While it would certainly be possible to build a single markdown document, as systems grow in complexity (and their documentation grows along with them), it's often easier to maintain up to date documentation if it's broken up by section. However, no one likes clicking through multiple pages of user guides (especially if a page only has a couple paragraphs). Doc MD solves that problem.
 
 Installation
 ------------
@@ -17,7 +17,7 @@ Then run
 
 `npm install ${path-to-docmd} --save-dev` 
 
-where `${path-to-docmd}` is the path to a location where you've cloned doc-md. (At some point once it's more stable, we'll publish doc-md to the npm registry, and you'll be able to install it more easily.)
+where `${path-to-docmd}` is the path to a location where you've cloned Doc MD. (At some point once it's more stable, we'll publish Doc MD to the npm registry, and you'll be able to install it more easily.)
 
 Configuration
 -------------
@@ -26,9 +26,9 @@ Add to your `Gruntfile.js` (first creating the file in your project directory if
 
 `grunt.loadTasks('${path to docmd}/tasks');`
 
-again where `${path-to-docmd}` is the path to the location where you've cloned doc-md.
+again where `${path-to-docmd}` is the path to the location where you've cloned Doc MD.
 
-You also need to configure the `docs` and `output` options to point to the location in your filesystem where you've stored your markdown documents (see the [Markdown Structure](#markdown-structure) section for details) and to where you want the output from doc-md to go, respectively. For each html guide you want, you should specify a doc-md task, with the single property `directory`, specifying the path to the guide in question, relative to the markdown directory specified by the `docs` option.
+You also need to configure the `docs` and `output` options to point to the location in your filesystem where you've stored your markdown documents (see the [Markdown Structure](#markdown-structure) section for details) and to where you want the output from Doc MD to go, respectively. For each html guide you want, you should specify a Doc MD task, with the single property `directory`, specifying the path to the guide in question, relative to the markdown directory specified by the `docs` option.
 
 ### Config Example
 ```
@@ -45,16 +45,16 @@ grunt.initConfig({
 });
 ```
 
-Before running grunt the first time, you need to run `npm install` from the doc-md directory, to grab the necessary node dependencies. 
+Before running grunt the first time, you need to run `npm install` from the Doc MD directory, to grab the necessary node dependencies. 
 
-Then you can simply define a grunt task that calls the doc-md plugin. For example:
+Then you can simply define a grunt task that calls the Doc MD plugin. For example:
 
 `grunt.registerTask('default', ['doc_md']);`
 
 Run
 ---
 
-To run doc-md, run `grunt ${task}`, where ${task} is the name of the task specified above, from the command line. If you've set up and configured everything correctly, your output should appear in the directory specified in the `output` option.
+To run Doc MD `grunt ${task}`, where ${task} is the name of the task specified above, from the command line. If you've set up and configured everything correctly, your output should appear in the directory specified in the `output` option.
 
 Markdown Structure
 ------------------
@@ -62,7 +62,7 @@ Markdown Structure
 The markdown-content directory (or whatever you choose to call it) needs to contain a valid properties.yml file that defines the organization of the final output document and its Table of Contents. 
 ###properties.yml
 ####name
-A properties.yml file should contain, at minimum a `name` property, defining the human-readable name for the guide (or section). If this property is used within a `toc` element, doc-md will insert a header into the final html output as well as an element within the table of contents for that name.
+A properties.yml file should contain, at minimum a `name` property, defining the human-readable name for the guide (or section). If this property is used within a `toc` element, Doc MD will insert a header into the final html output as well as an element within the table of contents for that name.
 ####description
 A description of the guide. This is currently unused.
 ####referenceId
@@ -72,7 +72,7 @@ A set of properties which define the icon for the guide. This should at minimum 
 ####toc
 This defines the structure to be used when including content within the guide. It's an array of items. Each item needs to define, at minimum a `file` property (which should be the relative path to a markdown file) or a `name` property (which will appear as the name of the section, in both the table of contents and the main content). It can also optionally contain a `referenceId` or its own `toc` property.
 ####normalizeHeaders
-By default, doc-md will attempt to normalize the headers used throughout the final html document so the header levels are consistent with the structure defined in the table of contents. If `normalizeHeaders: false` appears in the properties file, doc-md will not normalize headers.
+By default, Doc MD will attempt to normalize the headers used throughout the final html document so the header levels are consistent with the structure defined in the table of contents. If `normalizeHeaders: false` appears in the properties file, Doc MD will not normalize headers.
 
 ###Example
 Given the following directory structure:
