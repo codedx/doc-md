@@ -1,6 +1,6 @@
 {
   "name": "grunt-doc-md",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A system for building an html help system based on multiple help files written in markdown",
   "keywords": [
     "gruntplugin",
