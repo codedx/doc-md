@@ -110,6 +110,9 @@ module.exports = function(grunt) {
 		if (properties.brandIcon) {
 			compiledContent.brandIcon = properties.brandIcon;
 		}
+		if (properties.favicon) {
+			compiledContent.favicon = properties.favicon;
+		}
 		if (parameters.versionNumber) {
 			compiledContent.versionNumber = parameters.versionNumber;
 		}
