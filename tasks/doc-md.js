@@ -266,7 +266,7 @@ module.exports = function(grunt) {
 				var guide = {};
 				var propsFile = path.join(options.docs, directory, "properties.yml");
 				try {
-					var properties = yaml.safeLoad(fs.readFileSync(propsFile), {});
+					var properties = yaml.safeLoad(fs.readFileSync(propsFile, {encoding: "UTF-8"}), {});
 				} catch (YMLException) {
 					grunt.warn("Could not properly parse " + propsFile + " as a yaml file");
 				}
