@@ -8,11 +8,11 @@
     "help",
     "html"
   ],
-  "homepage": "https://github.com/secdec/doc-md",
+  "homepage": "https://github.com/codedx/doc-md",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/secdec/doc-md"
+    "url": "https://github.com/codedx/doc-md"
   },
   "dependencies": {
     "cheerio": "*",
@@ -29,7 +29,7 @@
     "grunt-contrib-concat": "^0.5.0"
   },
   "bugs": {
-    "url": "https://github.com/secdec/doc-md/issues"
+    "url": "https://github.com/codedx/doc-md/issues"
   },
   "author": ""
 }
