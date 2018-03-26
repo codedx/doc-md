@@ -106,7 +106,8 @@ module.exports = function(grunt) {
 		}, properties, 0);
 		var renderForWeb = jade.compileFile(path.join(parameters.webDir, "index.jade"));
 		var renderForPrint = jade.compileFile(path.join(parameters.webDir, "printer.jade"));
-		compiledContent.guideLinks = htmlUtils.highlightCurrentGuide(parameters.guideLinks, parameters.guideFile + '.html');
+		var fileName = parameters.overrideGuideFile || parameters.guideFile;
+		compiledContent.guideLinks = htmlUtils.highlightCurrentGuide(parameters.guideLinks, fileName + '.html');
 		if (properties.brandIcon) {
 			compiledContent.brandIcon = properties.brandIcon;
 		}
@@ -275,6 +276,7 @@ module.exports = function(grunt) {
 				guide.link = properties['referenceId'] || htmlUtils.buildId(properties['name']);
 				guide.text = properties['name'];
 				guide.directory = directory;
+				guide.overrideGuideFile = properties['overrideGuideFile'];
 
 				guides.push(guide);
 			});
@@ -298,6 +300,7 @@ module.exports = function(grunt) {
 					properties: guide.propertiesFile,
 					guideFile: guide.link,
 					guideLinks: guideLinksHtml,
+					overrideGuideFile: guide.overrideGuideFile,
 					output: options.output,
 					pdfOutput: options.pdfOutput,
 					pdfPandocTemplate: options.pdfPandocTemplate,

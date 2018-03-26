@@ -149,9 +149,10 @@ var buildGuideLinks = function(guides) {
 	guides.forEach(function(guide) {
 		var element = cheerio.load('<a><span></span></a>');
 		var icon;
+		var fileName = guide.overrideGuideFile || guide.link
 		element('a')
 			.addClass("all-guides-list-item list-group-item")
-			.attr('href', guide.link + '.html');
+			.attr('href', fileName + '.html');
 		element('span')
 			.addClass('docmd-guide-name')
 			.text(guide.text);
