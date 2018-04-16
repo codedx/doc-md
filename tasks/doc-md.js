@@ -277,6 +277,7 @@ module.exports = function(grunt) {
 				guide.text = properties['name'];
 				guide.directory = directory;
 				guide.overrideGuideFile = properties['overrideGuideFile'];
+				guide.makeDocument = properties['makeDocument'];
 
 				guides.push(guide);
 			});
@@ -295,20 +296,22 @@ module.exports = function(grunt) {
 			}
 
 			guides.forEach(function(guide, index) {
-				processMarkdown({
-					webDir: options.webDir,
-					properties: guide.propertiesFile,
-					guideFile: guide.link,
-					guideLinks: guideLinksHtml,
-					overrideGuideFile: guide.overrideGuideFile,
-					output: options.output,
-					pdfOutput: options.pdfOutput,
-					pdfPandocTemplate: options.pdfPandocTemplate,
-					keepMarkdown: options.keepMarkdown,
-					markPdfFinished: function() {markPdfFinished(index);},
-					docDir: path.join(options.docs, guide.directory),
-					versionNumber: options.versionNumber
-				});
+				if (guide.makeDocument !== false) {
+					processMarkdown({
+						webDir: options.webDir,
+						properties: guide.propertiesFile,
+						guideFile: guide.link,
+						guideLinks: guideLinksHtml,
+						overrideGuideFile: guide.overrideGuideFile,
+						output: options.output,
+						pdfOutput: options.pdfOutput,
+						pdfPandocTemplate: options.pdfPandocTemplate,
+						keepMarkdown: options.keepMarkdown,
+						markPdfFinished: function() {markPdfFinished(index);},
+						docDir: path.join(options.docs, guide.directory),
+						versionNumber: options.versionNumber
+					});
+				}
 			});
 		});
 		grunt.task.run('docmd_markdown');
