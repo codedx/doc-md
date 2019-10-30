@@ -60,21 +60,29 @@ Markdown Structure
 ------------------
 
 The markdown-content directory (or whatever you choose to call it) needs to contain a valid properties.yml file that defines the organization of the final output document and its Table of Contents. 
-###properties.yml
-####name
-A properties.yml file should contain, at minimum a `name` property, defining the human-readable name for the guide (or section). If this property is used within a `toc` element, Doc MD will insert a header into the final html output as well as an element within the table of contents for that name.
-####description
-A description of the guide. This is currently unused.
-####referenceId
-In the case of a top-level element, this will be the name given to the guide file. For instances nested within the `toc` element, this will be used as the id of the section in question and can be used within the markup for purposes of linking within the overall document.
-####icon
-A set of properties which define the icon for the guide. This should at minimum include a `file` property which should contain the path to the icon's location within the resources directory. It can also include a `style` property, which can include any valid css property. The icon is placed within a standard <img> tag, so keep that in mind when using styles.
-####toc
-This defines the structure to be used when including content within the guide. It's an array of items. Each item needs to define, at minimum a `file` property (which should be the relative path to a markdown file) or a `name` property (which will appear as the name of the section, in both the table of contents and the main content). It can also optionally contain a `referenceId` or its own `toc` property.
-####normalizeHeaders
-By default, Doc MD will attempt to normalize the headers used throughout the final html document so the header levels are consistent with the structure defined in the table of contents. If `normalizeHeaders: false` appears in the properties file, Doc MD will not normalize headers.
 
-###Example
+### properties.yml contents
+
+ - `name`
+   A properties.yml file should contain, at minimum a `name` property, defining the human-readable name for the guide (or section). If this property is used within a `toc` element, Doc MD will insert a header into the final html output as well as an element within the table of contents for that name.
+
+ - `description`
+   A description of the guide. This is currently unused.
+
+ - `referenceId`
+   In the case of a top-level element, this will be the name given to the guide file. For instances nested within the `toc` element, this will be used as the id of the section in question and can be used within the markup for purposes of linking within the overall document.
+
+ - `icon`
+   A set of properties which define the icon for the guide. This should at minimum include a `file` property which should contain the path to the icon's location within the resources directory. It can also include a `style` property, which can include any valid css property. The icon is placed within a standard <img> tag, so keep that in mind when using styles.
+
+ - `toc`
+   This defines the structure to be used when including content within the guide. It's an array of items. Each item needs to define, at minimum a `file` property (which should be the relative path to a markdown file) or a `name` property (which will appear as the name of the section, in both the table of contents and the main content). It can also optionally contain a `referenceId` or its own `toc` property.
+
+ - `normalizeHeaders`
+   By default, Doc MD will attempt to normalize the headers used throughout the final html document so the header levels are consistent with the structure defined in the table of contents. If `normalizeHeaders: false` appears in the properties file, Doc MD will not normalize headers.
+
+### Example
+
 Given the following directory structure:
   - markdown-content
     - resources
