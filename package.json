@@ -15,14 +15,14 @@
     "url": "https://github.com/codedx/doc-md"
   },
   "dependencies": {
+    "bootstrap": "^3.4.1",
     "cheerio": "*",
     "grunt": ">=0.4.0",
-    "grunt-bower-concat": "^0.4.0",
-    "grunt-bower-task": "^0.4.0",
     "grunt-contrib-clean": "^0.6.0",
     "grunt-contrib-concat": "^0.5.0",
     "grunt-contrib-copy": "^0.7.0",
     "jade": "*",
+    "jquery": "^3.4.1",
     "js-yaml": "*",
     "marked": "^0.7.0",
     "pagedown": "*",
