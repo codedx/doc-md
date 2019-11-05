@@ -2,7 +2,7 @@
 
 module.exports = function(grunt) {
 
-	var jade = require('jade'),
+	var pug = require('pug'),
 		path = require('path'),
 		fs = require('fs'),
 		yaml = require('js-yaml'),
@@ -33,7 +33,7 @@ module.exports = function(grunt) {
 
 	var buildPdf = function (parameters) {
 		if (parameters.pdfOutput) {
-			var renderFooter = jade.compileFile(path.join(parameters.webDir, "footer.jade"));
+			var renderFooter = pug.compileFile(path.join(parameters.webDir, "footer.jade"));
 			var footerUrl = path.resolve(path.join(parameters.output, parameters.guideFile + '.footer.html'));
 			grunt.file.write(footerUrl,
 				renderFooter({
@@ -42,7 +42,7 @@ module.exports = function(grunt) {
 						right: path.join('file://', path.resolve(parameters.output, parameters.properties.brandIcon))
 					}
 				}));
-			var renderCover = jade.compileFile(path.join(parameters.webDir, "cover.jade"));
+			var renderCover = pug.compileFile(path.join(parameters.webDir, "cover.jade"));
 			var coverUrl = path.resolve(path.join(parameters.output, parameters.guideFile + '.cover.html'));
 			grunt.file.write(coverUrl,
 				renderCover({
@@ -70,7 +70,7 @@ module.exports = function(grunt) {
 				}))
 				.concat([parameters.guideFile + '.print.html', parameters.guideFile + '.pdf']);
 
-			
+
 			cp.execFile('wkhtmltopdf', args, {
 				cwd: parameters.output
 			}, function (error, stdout, stderr) {
@@ -104,8 +104,8 @@ module.exports = function(grunt) {
 			'docDir': docDir,
 			'normalizeHeaders': normalizeHeaders
 		}, properties, 0);
-		var renderForWeb = jade.compileFile(path.join(parameters.webDir, "index.jade"));
-		var renderForPrint = jade.compileFile(path.join(parameters.webDir, "printer.jade"));
+		var renderForWeb = pug.compileFile(path.join(parameters.webDir, "index.jade"));
+		var renderForPrint = pug.compileFile(path.join(parameters.webDir, "printer.jade"));
 		var fileName = parameters.overrideGuideFile || parameters.guideFile;
 		compiledContent.guideLinks = htmlUtils.highlightCurrentGuide(parameters.guideLinks, fileName + '.html');
 		if (properties.brandIcon) {
@@ -145,15 +145,21 @@ module.exports = function(grunt) {
 					}
 				]
 			},
-			docmd_bower: {
+			docmd_frontend_deps: {
 				files: [
 					{
+						// creates `lib/bootstrap/dist` with the main 'css', 'fonts', and 'js' folders for bootstrap
 						expand: true,
-						cwd: path.join(__dirname, "../bower_components"),
-						src: [
-							"*/dist/**/*"
-						],
-						dest: path.join(options.output, 'lib')
+						cwd: path.join(require.resolve('bootstrap'), '../../'),
+						src: ['**/*'],
+						dest: path.join(options.output, 'lib/bootstrap/dist')
+					},
+					{
+						// creates `lib/jquery/dist` which contains `jquery.js` and friends
+						expand: true,
+						cwd: path.join(require.resolve('jquery'), '../'),
+						src: ['**/*'],
+						dest: path.join(options.output, 'lib/jquery/dist')
 					}
 				]
 			},
@@ -169,7 +175,7 @@ module.exports = function(grunt) {
 			}
 
 		});
-		grunt.task.run('copy:docmd_resources', 'copy:docmd_bower', 'copy:docmd_user_lib');
+		grunt.task.run('copy:docmd_resources', 'copy:docmd_frontend_deps', 'copy:docmd_user_lib');
 	};
 	var setupDirectories = function (options) {
 		grunt.config('clean', {
@@ -194,16 +200,6 @@ module.exports = function(grunt) {
 		grunt.task.run('docmd_setup');
 	};
 	var handleWebDependencies = function (options) {
-		process.chdir(path.join(__dirname, '../'));
-		grunt.config('bower', {
-			'options': {
-				copy: false
-			},
-			'install': {}
-		});
-		grunt.task.run('bower');
-		grunt.task.run('docmd_chdir');
-
 		grunt.config('concat', {
 			'docmd_user_js': {
 				options: {
@@ -249,11 +245,8 @@ module.exports = function(grunt) {
 		}
 
 		grunt.loadNpmTasks('grunt-contrib-clean');
-		grunt.loadNpmTasks('grunt-bower-concat');
 		grunt.loadNpmTasks('grunt-contrib-concat');
 		grunt.loadNpmTasks('grunt-contrib-copy');
-		grunt.loadNpmTasks('grunt-bower-task');
-
 
 		setupDirectories(options);
 
