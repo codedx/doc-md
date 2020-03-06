@@ -109,6 +109,7 @@ var buildAndLinkHtml = function(options, properties, depth) {
 			var header = $(this);
 			header.attr('id', header.text().replace(idRegex, ''));
 		});
+		$('a').each((i, el) => $(el).attr('rel', 'noopener noreferrer'))
 		header = $(allHtmlHeaders).first();
 		name = header.text();
 	} else  {
