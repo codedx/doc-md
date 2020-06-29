@@ -63,6 +63,7 @@ module.exports = function(grunt) {
 				footerHtml: 'file:///' + footerUrl,
 				printMediaType: true
 			})
+				.concat(['--allow', parameters.output])
 				.concat(['cover', 'file:///' + coverUrl])
 				.concat(['toc']).concat(
 				convertObjectToArgs({
