@@ -23,7 +23,7 @@
     "grunt-contrib-copy": "^0.7.0",
     "jquery": "^3.4.1",
     "js-yaml": "*",
-    "marked": "^0.7.0",
+    "marked": "^4.0.10",
     "pagedown": "*",
     "pug": "^2.0.4",
     "slang": "^0.3.0"
